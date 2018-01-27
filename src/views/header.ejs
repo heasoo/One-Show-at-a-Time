@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+
+<body>
+				
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="nav navbar-nav">
+				<span id="menu-toggle"><a href="#menu-toggle" class="fa fa-reorder" id="navbar-fa"></a></span>
+			</div>
+		</div>
+	</nav>
+	
+	<div id="wrapper">
+		<!-- Top navbar -->
+            <div class="container-fluid">
+			</div>
+
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <% if (user) { %>
+                <li><a href="/users/profile">Profile</a></li>
+                <li><a href="#">My Calendar</a></li> <!-- TODO -->
+                <% } %>
+                <li><a href="#">Shows</a></li> <!-- TODO -->
+                <li><a href="#">Auditions</a></li> <!-- TODO -->
+                <li><a href="#">FAQ</a></li> <!-- TODO -->
+                <li><a href="#">About Us</a></li> <!-- TODO -->
+                <li><a href="#">Contact Us</a></li> <!-- TODO -->
+                <% if (user) { %>
+                    <% if (user.token) { %>
+                <li><a href="/users/logout">Log out</a></li>
+                    <% } else { %>
+                <li><a href="/users/logout">Log out</a></li>
+                    <% } %>
+                <% } %>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+
+
+<script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+
+</script>
+</html>

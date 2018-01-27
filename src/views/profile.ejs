@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <% include ./head %>
+</head>
+<% include ./header %>
+
+
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><%= user.name %></h1>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <% if (user.token) { %>     <!-- user is a FB user -->
+            <img src="<%= user.profile_picture%>" class="img-rounded" width="310">
+            <% } else { %>              <!-- user is a local user -->
+            <img src="/static<%= user.profile_picture%>" class="img-rounded" width="310">
+            <% } %>
+        </div>
+
+        <div class="col-sm-8">
+            <div class="well">
+                <h2>
+                    <a href="/users/editprofile" class="btn btn-primary pull-right" id="right-panel-link"> Edit</a>
+                    <span class="fa fa-user"></span> User Info
+                </h2>
+
+                    <p>
+                        <strong>Name</strong>: <%= user.name %><br>
+                        <strong>Email</strong>: <%= user.email %><br>
+                    </p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+</body>
+</html>
