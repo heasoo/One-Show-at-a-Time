@@ -15,11 +15,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    date_time: {
-      type: DataTypes.DATE,
-      defaultValue: '0000-00-00T00:00:00.000Z',
-      allowNull: false
+    dates: {
+      type: DataTypes.ARRAY(DataTypes.DATE),
+      defaultValue: [],
+      allowNull: true
     },
+    genre: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false
+    }
  },
 {
   freezeTableName: true,

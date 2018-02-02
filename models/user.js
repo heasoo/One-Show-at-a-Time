@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    role: {                          // one of: user, admin, company
+    role: {                          // one of: user, admin, showOwner
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'user'

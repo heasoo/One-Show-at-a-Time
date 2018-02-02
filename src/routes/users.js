@@ -2,14 +2,15 @@ const express = require('express');
 const router = express.Router();
 var LocalUser = require('../../models').LocalUser;
 var FacebookUser = require('../../models').FacebookUser;
+var FB = require('fb');
+FB.options({version: 'v2.11'});
 
 var passport = require('../middleware/passport');
 var multer = require('multer');
 
 /* Roles */
 var authorize = require('../middleware/authorization');
-var adminAuthorize = require('../middleware/adminAuthorization');
-//var companyAuthorize = require('../middleware/companyAuthorization');
+//var adminAuthorize = require('../middleware/adminAuthorization');
 
 var storage = multer.diskStorage({
 	destination: function(req, file, callback) {
@@ -85,39 +86,48 @@ router.post('/signup', function(req, res, next) {
 	})(req, res, next);
 });
 
-router.get('/profile', authorize.loggedIn , function(req, res) {
-	res.render('profile.ejs');
-});
-
-
-router.get('/logout', function(req, res) {
-	/*** Change TEST_URL to HOST_URL when deploying***/
-	var HOST_URL = req.protocol + "://" + req.hostname + "/";
-	var TEST_URL = req.protocol + "://" + req.hostname + ":" + 3000;
-	var ACCESS_TOKEN = req.user.token;
-
-	req.session.destroy(function (err) {
-	  	if (err) return next(err);
-    	res.clearCookie('connect.sid');
-    	res.redirect('https://www.facebook.com/logout.php?next='+TEST_URL+ '&access_token='+ACCESS_TOKEN);
-	});
-});
-
-router.get('/editprofile', authorize.loggedIn, function(req, res) {
-	res.render('editprofile.ejs');
-});
-
-router.post('/editprofile', function(req, res) {
-	//TODO
-});
-
 router.get('/auth/facebook', passport.authenticate('facebook', {
 
 }));
 
 router.get('/auth/facebook/callback', passport.authenticate('facebook', {
 		successRedirect: '/users/profile',
-		failureRedirect: '/users/logout'				//TODO
+		failureRedirect: '/users/logout'				
 }));
+
+router.get('/logout', authorize.loggedIn, function(req, res) {
+	/*** Change TEST_URL to HOST_URL when deploying***/
+	var TEST_URL = req.protocol + "://" + req.hostname + ":" + 3000;
+	var HOST_URL = req.protocol + "://" + req.hostname + "/";
+	var ACCESS_TOKEN = FB.getAccessToken();
+
+	if (ACCESS_TOKEN) {
+		req.session.destroy(function (err) {
+	  		if (err) return next(err);
+    		res.clearCookie('connect.sid');
+    		res.redirect('https://www.facebook.com/logout.php?next='+TEST_URL+ '&access_token='+ACCESS_TOKEN);
+		});	
+	} else {
+		req.session.destroy(function (err) {
+		  	if (err) return next(err);
+    		res.clearCookie('connect.sid');
+    		res.redirect('/');
+		});
+	}
+});
+
+
+router.get('/profile', authorize.loggedIn, function(req, res) {
+	res.render('profile.ejs');
+});
+
+router.get('/calendar', authorize.loggedIn, function(req, res) {
+	res.render('calendar.ejs');
+})
+
+router.get('/editprofile', authorize.loggedIn, function(req, res) {
+	res.render('editprofile.ejs');
+});
+
 
 module.exports = router;

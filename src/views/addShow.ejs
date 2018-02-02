@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <% include ./head %>
+</head>
+<% include ./header %>
+
+<style>
+/*ul {
+	display:inline-block;
+}*/
+
+li {
+	display:inline-block;
+	list-style-type: none;
+	margin-bottom:10px;
+}
+</style>
+	<div class="page-header text-center">
+		<h2>Add a Show</h2>
+	</div>
+
+	<div class="container">
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="title">Title: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="title" name="title">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="venue">Venue: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="venue" name="venue">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="genre">Genre(s): </label>
+				<div class="col-sm-8">
+					<!-- https://silviomoreto.github.io/bootstrap-select/options/ -->
+					<select class="selectpicker" multiple>
+  						<option>Comedy</option>
+  						<option>Romance</option>
+  						<option>Satire</option>
+  						<!-- TODO: add more in alphabetical order -->
+					</select>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="date">Date(s): </label>
+				<div class="col-sm-2" id="dateCol">
+						<input type="date" class="form-control" name="dates"> 
+				</div>
+				<button class="btn btn-primary" id="addDate">Add another date</button>
+			</div>
+			
+
+			<!-- Nested Time Group -->
+			<div class="col-sm-1">
+			</div>
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="time"> Time(s): </label>
+				<div class="col-sm-2" id="timeCol">
+					<ul id="timeUl">
+						<li class="timeLi"><input class="timepicker form-control"></li>
+					</ul>
+				</div>
+				<button class="btn btn-primary" id="addTime">Add another time</button>					
+			</div>
+
+	</div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+<script>
+$(document).ready(function() {
+	$("#addDate").click(function(e) {
+		e.preventDefault();
+		$("#dateCol").append("<br><li><input type='date' class='form-control' name='dates'></li>");
+	});
+
+	$("#addTime").click(function(e) {
+		e.preventDefault();
+		$(".timeLi").clone(true).appendTo("#timeUl");
+	});
+
+	$('.timepicker').timepicker({
+	    timeFormat: 'h:mm p',
+	    interval: 30,
+	    minTime: '12:00am',
+	    maxTime: '11:30pm',
+	    defaultTime: '6:30pm',
+	    dynamic: false,
+	    dropdown: true,
+	    scrollbar: true
+	});
+});	
+</script>
+
+</body>
+</html>

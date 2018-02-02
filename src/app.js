@@ -2,7 +2,6 @@ var express = require('express');
 var app = express();
 var path = require('path');
 
-// middleware
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var ConnectRoles = require('connect-roles');
@@ -15,6 +14,7 @@ var session = require('express-session');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var shows = require('./routes/shows');
+var auditions = require('./routes/auditions');
 var roles = new ConnectRoles();
 
 // view engine setup
@@ -45,6 +45,7 @@ app.use('/static', express.static(path.join(__dirname, '../public')));
 app.use('/', routes);
 app.use('/users', users);
 app.use('/shows', shows);
+app.use('/auditions', auditions);
 
 
 

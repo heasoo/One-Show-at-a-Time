@@ -7,34 +7,26 @@
 		<div class="container-fluid">
 			<div class="nav navbar-nav">
 				<span id="menu-toggle"><a href="#menu-toggle" class="fa fa-reorder" id="navbar-fa"></a></span>
-			</div>
-		</div>
-	</nav>
-	
-	<div id="wrapper">
-		<!-- Top navbar -->
-            <div class="container-fluid">
-			</div>
-
-
+            </div>
+                <a href="/">One Show at a Time</a>
+        </div>
+    </nav>
+    
+    <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <ul class="sidebar-nav">
                 <% if (user) { %>
-                <li><a href="/users/profile">Profile</a></li>
-                <li><a href="#">My Calendar</a></li> <!-- TODO -->
+                <li><a href="/users/profile">My Profile</a></li>
+                <li><a href="/users/calendar#">My Calendar</a></li>
                 <% } %>
-                <li><a href="#">Shows</a></li> <!-- TODO -->
-                <li><a href="#">Auditions</a></li> <!-- TODO -->
-                <li><a href="#">FAQ</a></li> <!-- TODO -->
-                <li><a href="#">About Us</a></li> <!-- TODO -->
-                <li><a href="#">Contact Us</a></li> <!-- TODO -->
+                <li><a href="/shows">Shows</a></li> 
+                <li><a href="/auditions">Auditions</a></li> 
+                <li><a href="/faq">FAQ</a></li> 
+                <li><a href="/aboutUs">About Us</a></li> 
+                <li><a href="/contactUs">Contact Us</a></li> 
                 <% if (user) { %>
-                    <% if (user.token) { %>
                 <li><a href="/users/logout">Log out</a></li>
-                    <% } else { %>
-                <li><a href="/users/logout">Log out</a></li>
-                    <% } %>
                 <% } %>
             </ul>
         </div>

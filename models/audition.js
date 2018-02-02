@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-  	date_time: {
-  		type: DataTypes.DATE,
-  		defaultValue: '0000-00-00T00:00:00.000Z',
-  		allowNull: false
-  		},
+    dates: {
+      type: DataTypes.ARRAY(DataTypes.DATE),
+      defaultValue: [],
+      allowNull: true
+    },
   	venue: {
   		type: DataTypes.STRING,
   		allowNull: false

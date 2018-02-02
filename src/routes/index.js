@@ -12,4 +12,16 @@ router.get('/', function(req, res) {
 	}
 });
 
+router.get('/faq', function(req, res, next) {
+	res.render('FAQ.ejs');
+});
+
+router.get('/aboutUs', function(req, res, next) {
+	res.render('aboutUs.ejs');
+});
+
+router.get('/contactUs', function(req, res, next) {
+	res.render('contactUs.ejs');
+});
+
 module.exports = router;

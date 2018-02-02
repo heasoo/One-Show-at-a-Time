@@ -5,6 +5,7 @@ var adminAuthorization = {
 		} else {
 			// TODO
 			res.redirect('/');
+			console.log('admin authorization failed');
 		}
 	}
 }

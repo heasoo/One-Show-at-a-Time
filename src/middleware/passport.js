@@ -6,6 +6,7 @@ var LocalUser = require('../../models').LocalUser;
 var FacebookUser = require('../../models').FacebookUser;
 var bcrypt = require('bcryptjs');
 var configAuth = require('../../config/thirdPartyConfig.js');
+var FB = require('fb');
 
 /* Store user id to session*/
 passport.serializeUser(function(user, done) {
@@ -14,7 +15,7 @@ passport.serializeUser(function(user, done) {
 
 /* Attach user object to req*/
 passport.deserializeUser(function(obj, done) {  
-/*	User.findAll({
+/*  User.findAll({
         where: {
             'id': id
         }
@@ -112,12 +113,11 @@ function(token, refreshToken, profile, done) {
                 // both middle name and email exist
                 if (profile.name.middleName && profile.emails) {
                     user.update({
-                        'token': token,
                         'name': profile.name.givenName + ' ' + profile.name.middleName + ' ' + profile.name.familyName,
                         'email': profile.emails[0].value,
                         'profile_picture': profile.photos[0].value
                     }).then(function() {
-                        console.log('user updated');
+                        console.log('user updated 1');
                     }).catch(function(err) {
                         console.log(err);
                     });
@@ -126,12 +126,11 @@ function(token, refreshToken, profile, done) {
                 // middle name does not exist, email exists
                 if (profile.emails) {
                     user.update({
-                        'token': token,
                         'name': profile.name.givenName + ' ' + profile.name.familyName,
                         'email': profile.emails[0].value,
                         'profile_picture': profile.photos[0].value                            
                     }).then(function() {
-                        console.log('user updated');
+                        console.log('user updated 2');
                     }).catch(function(err) {
                         console.log(err);
                     });
@@ -140,45 +139,46 @@ function(token, refreshToken, profile, done) {
                 // middle name exists, email does not exist
                 if (profile.name.middleName) {
                     user.update({
-                        'token': token,
                         'name': profile.name.givenName + ' ' + profile.name.middleName + ' ' + profile.name.familyName,
                         'email': null,
                         'profile_picture': profile.photos[0].value
                     }).then(function() {
-                        console.log('user updated');
+                        console.log('user updated 3');
                     }).catch(function(err) {
                         console.log(err);
                     });
+                } 
+                    
+                // neither middle name nor email exist
+                if (!profile.name.middleName && !profile.emails) {
+                    user.update({
+                        'name': profile.name.givenName + ' ' + profile.name.familyName,
+                        'email': null,
+                        'profile_picture': profile.photos[0].value
+                    }).then(function() {
+                        console.log('user updated 4');
+                    }).catch(function(err) {
+                        console.log(err);
+                    });                   
                 }
 
-                // neither middle name nor email exist
-                user.update({
-                    'token': token,
-                    'name': profile.name.givenName + ' ' + profile.name.familyName,
-                    'email': null,
-                    'profile_picture': profile.photos[0].value
-                }).then(function() {
-                    console.log('user updated');
-                }).catch(function(err) {
-                    console.log(err);
-                });                   
-
-                 return done(null, user);
+                FB.setAccessToken(token);
+                return done(null, user);
             } else {
                 // FB User doesn't exist in DB, create one
+                FB.setAccessToken(token);
                 User.create({
 
                 }).then(function(_user) {
-                    console.log(profile);
                     if (profile.name.middleName && profile.emails) {
                         FacebookUser.create({
                             'id': _user.id,
                             'fb_id': profile.id,
-                            'token': token,
                             'name': profile.name.givenName + ' ' + profile.name.middleName + ' ' + profile.name.familyName,
                             'email': profile.emails[0].value,
                             'profile_picture': profile.photos[0].value
                         }).then(function(fbUser) {
+                            console.log('user created 1');
                             return done(null, fbUser);
                         }).catch(function(err) {
                             console.log(err);
@@ -189,11 +189,11 @@ function(token, refreshToken, profile, done) {
                         FacebookUser.create({
                             'id': _user.id,
                             'fb_id': profile.id,
-                            'token': token,
                             'name': profile.name.givenName + ' ' + profile.name.middleName + ' ' + profile.name.familyName,
                             'email': null,
                             'profile_picture': profile.photos[0].value
                         }).then(function(fbUser) {
+                            console.log('user created 2');
                             return done(null, fbUser);
                         }).catch(function(err) {
                             console.log(err);
@@ -204,30 +204,31 @@ function(token, refreshToken, profile, done) {
                         FacebookUser.create({
                             'id': _user.id,
                             'fb_id': profile.id,
-                            'token': token,
                             'name': profile.name.givenName + ' ' + profile.name.familyName,
                             'email': profile.emails[0].value,
                             'profile_picture': profile.photos[0].value
                         }).then(function(fbUser) {
+                            console.log('user created 3');
                             return done(null, fbUser);
                         }).catch(function(err) {
                             console.log(err);
                         });                           
                     }                        
 
-                    FacebookUser.create({
-                        'id': _user.id,
-                        'fb_id': profile.id,
-                        'token': token,
-                        'name': profile.name.givenName + ' ' + profile.name.familyName,
-                        'email': null,
-                        'profile_picture': profile.photos[0].value
-                    }).then(function(fbUser) {
-                        return done(null, fbUser);
-                    }).catch(function(err) {
-                        console.log(err);
-                    });       
-                    
+                    if (!profile.emails && !profile.name.middleName) {
+                        FacebookUser.create({
+                            'id': _user.id,
+                            'fb_id': profile.id,
+                            'name': profile.name.givenName + ' ' + profile.name.familyName,
+                            'email': null,
+                            'profile_picture': profile.photos[0].value
+                        }).then(function(fbUser) {
+                            console.log('user created 4');
+                            return done(null, user);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });       
+                    }                   
                 });
             }
         }).catch(function(err) {
@@ -237,4 +238,5 @@ function(token, refreshToken, profile, done) {
     })
 );
 
+module.exports = FB;
 module.exports = passport;
