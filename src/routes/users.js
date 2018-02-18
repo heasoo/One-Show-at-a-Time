@@ -126,7 +126,7 @@ router.get('/calendar', authorize.loggedIn, function(req, res) {
 })
 
 router.get('/editprofile', authorize.loggedIn, function(req, res) {
-	res.render('editprofile.ejs');
+	res.render('editProfile.ejs');
 });
 
 

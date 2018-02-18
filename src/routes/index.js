@@ -6,7 +6,7 @@ var passport = require('../middleware/passport');
 
 router.get('/', function(req, res) {
 	if (req.user) {
-		res.render('shows.ejs');
+		res.redirect('/shows');
 	} else {
 		res.render('index.ejs');
 	}

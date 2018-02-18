@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    dates: {
+    date: {
       type: DataTypes.ARRAY(DataTypes.DATE),
       defaultValue: [],
       allowNull: true
@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
   		type: DataTypes.STRING,
   		allowNull: false
   	},
+    contact: {
+      type: DataTypes.ARRAY(DataTypes.DATE),
+      allowNull: false
+    }
  },
 {
   freezeTableName: true,

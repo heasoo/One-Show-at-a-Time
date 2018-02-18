@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    dates: {
+    date: {
       type: DataTypes.ARRAY(DataTypes.DATE),
       defaultValue: [],
       allowNull: true
@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     genre: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false
+    },
+    company_id: {
+      type: DataTypes.UUID
     }
  },
 {

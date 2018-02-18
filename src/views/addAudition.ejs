@@ -16,8 +16,8 @@
 }*/
 </style>
 	<div class="page-header text-center">
-		<button class="btn pull-right btn-success" id="create"> Create show</button>
-		<h2>Add a Show</h2>
+		<button class="btn pull-right btn-success" id="create"> Create Audition</button>
+		<h2>Add an Audition</h2>
 	</div>
 
 	<div class="container">
@@ -31,24 +31,28 @@
 			</div>
 
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="venue">Venue: </label>
+				<label class="control-label col-sm-2" for="venue">Audition Venue: </label>
 				<div class="col-sm-8">
 					<input type="text" class="form-control" id="venue" name="venue">
 					<div id="venueValidation"></div>
 				</div>
 			</div>
 
-			<!-- https://silviomoreto.github.io/bootstrap-select/options/ -->
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="genre">Genre(s): </label>
+				<label class="control-label col-sm-2" for="contact">Contact: </label>
 				<div class="col-sm-8">
-					<select class="selectpicker" multiple>
-  						<option>Comedy</option>
-  						<option>Romance</option>
-  						<option>Thriller</option>
-  						<!-- TODO: add more in alphabetical order -->
-					</select>
-					<div id="selectpickerValidation"></div>
+					<input type="text" class="form-control" id="email" placeholder="Email">
+					<div id="venueValidation"></div>
+					<br>
+					<input type="text" class="form-control" id="phoneNumber" placeholder="Phone Number">
+					<div id="venueValidation"></div>
+				</div>
+			</div>			
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="venue">Notes: </label>
+				<div class="col-sm-8">
+					<textarea rows="8" cols="80" name="notes"></textarea>
 				</div>
 			</div>
 
@@ -63,7 +67,7 @@
 			        	    </div>
 				        </div>
 					</div>
-					<button class="btn btn-primary" id="addShow">Add show time</button>
+					<button class="btn btn-primary" id="addAudition">Add audition time</button>
 					<div id='dateValidation'></div>
 				</div>			
 			</div>
@@ -72,7 +76,7 @@
 			<br>
 			<br>
 
- 			<table class="table table-hover" id="showingsTable">
+ 			<table class="table table-hover" id="auditionsTable">
 				<thead>
 					<tr>
 						<th>Select</th>
@@ -80,10 +84,10 @@
 						<th>Time</th>
 					</tr>
 				</thead>
-				<tbody id="showingsTableBody">
+				<tbody id="auditionsTableBody">
 				</tbody>
 			</table>
-			<button class="btn btn-primary" id="deleteShow">Delete show time</button>
+			<button class="btn btn-primary" id="deleteAudition">Delete audition time</button>
 
 		</form>
 	</div>
@@ -103,12 +107,13 @@ $(document).ready(function() {
 
     $('#datetimepicker12').datetimepicker({
         inline: true,
+
         sideBySide: true,
         minDate: minDateValue,
         maxDate: maxDateValue
     });	
 
-	$("#addShow").click(function(e) {
+	$("#addAudition").click(function(e) {
 		e.preventDefault();
 		var date = $("#datetimepicker12").data('DateTimePicker').date();
 
@@ -124,12 +129,12 @@ $(document).ready(function() {
 
         var markup = $("<tr><td><input type='checkbox' name='record'></td><td>" + month + " " + day + " " + year + "</td><td>" + hours + ":" + minute + " " + suffix + "</td></tr>");
         markup.data("date", date);
-        $("#showingsTableBody").append(markup);
+        $("#auditionsTableBody").append(markup);
     });
 
-    $("#deleteShow").click(function(e){
+    $("#deleteAudition").click(function(e){
     	e.preventDefault();
-        $("#showingsTableBody").find('input[name="record"]').each(function(){
+        $("#auditionsTableBody").find('input[name="record"]').each(function(){
           	if($(this).is(":checked")){
                 $(this).parents("tr").remove();
             }
@@ -163,7 +168,7 @@ $(document).ready(function() {
     			$("#selectpickerValidation").replaceWith("<div id='selectpickerValidation'></div>");
     		}
 
-    		if (document.getElementById("showingsTable").rows.length <= 1) {
+    		if (document.getElementById("auditionsTable").rows.length <= 1) {
     			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
     		} else {
     			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
@@ -173,7 +178,7 @@ $(document).ready(function() {
 	    	var data = {};
     		var dates = new Array();
 
-	    	$('#showingsTable > tbody  > tr').each(function() {
+	    	$('#auditionsTable > tbody  > tr').each(function() {
     			var isoDate = ($(this).data("date")).toISOString();
     			dates.push(isoDate);
 	    	});
@@ -187,10 +192,10 @@ $(document).ready(function() {
 			//   alert( key + ": " + value );
 			// });
 
-			$.post('/shows/addshow', data, function(result) {
+			$.post('/auditions/addaudition', data, function(result) {
 				if (result) {
-					var showId = result.id;
-					window.location.href = '/shows/' + showId;
+					var auditionId = result.id;
+					window.location.href = '/auditions/' + auditionId;
 				};
     	    });
 

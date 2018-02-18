@@ -7,7 +7,14 @@
 
 
 	<div class="page-header text-center">
+		<% if (isShowOwner) { %>
+		<button class="btn pull-right btn-success" onclick="location.href='/auditions/addaudition';"> Create Audition</button>
+		<% } %>
 		<h2>Auditions</h2>
+	</div>
+
+	<div class="container">
+		<%=auditions%>
 	</div>
 
         </div>
