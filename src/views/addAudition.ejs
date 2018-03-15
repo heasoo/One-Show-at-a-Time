@@ -22,11 +22,16 @@
 
 	<div class="container">
 		<form class="form-horizontal" id="form">
+
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="title">Title: </label>
+				<label class="control-label col-sm-2" for="show">Show: </label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" id="title" name="title" required="true">
-					<div id="titleValidation"></div>
+					<select class="selectpicker" title="Choose a show">
+					<% shows.forEach(function(show) {%>
+  						<option name='<%=show.title%>' data-id='<%=show.id%>'><%= show.title %></option>
+  					<% }); %>
+					</select>
+					<div id="showValidation"></div>
 				</div>
 			</div>
 
@@ -42,17 +47,17 @@
 				<label class="control-label col-sm-2" for="contact">Contact: </label>
 				<div class="col-sm-8">
 					<input type="text" class="form-control" id="email" placeholder="Email">
-					<div id="venueValidation"></div>
+					<div id="emailValidation"></div>
 					<br>
 					<input type="text" class="form-control" id="phoneNumber" placeholder="Phone Number">
-					<div id="venueValidation"></div>
+					<div id="phoneNumberValidation"></div>
 				</div>
 			</div>			
 
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="venue">Notes: </label>
 				<div class="col-sm-8">
-					<textarea rows="8" cols="80" name="notes"></textarea>
+					<textarea rows="8" cols="80" id="notes"></textarea>
 				</div>
 			</div>
 
@@ -107,7 +112,6 @@ $(document).ready(function() {
 
     $('#datetimepicker12').datetimepicker({
         inline: true,
-
         sideBySide: true,
         minDate: minDateValue,
         maxDate: maxDateValue
@@ -144,16 +148,18 @@ $(document).ready(function() {
     $("#create").click(function(e) {
     	e.preventDefault();
 
-    	var titleVal = $("#title").val();
+    	var showVal = $(".selectpicker").val();
     	var venueVal = $("#venue").val();
-    	var selectpickerVal = $(".selectpicker").val();
+    	var email = $("#email").val();
+    	var phoneNumber = $("#phoneNumber").val();
+    	var dateCount = document.getElementById("auditionsTable").rows.length;
 
     	// Form Validation
-    	if (!titleVal || !venueVal || !selectpickerVal) {
-    		if (!titleVal) {
-    			$("#titleValidation").replaceWith("<div id='titleValidation' class='alert alert-danger'> Please enter a title </div>");
+    	if (!showVal || !venueVal || !email || !phoneNumber || dateCount <= 1) {
+    		if (!showVal) {
+    			$("#showValidation").replaceWith("<div id='showValidation' class='alert alert-danger'> Please choose a show </div>");
     		} else {
-    			$("#titleValidation").replaceWith("<div id='titleValidation'></div>");
+    			$("#showValidation").replaceWith("<div id='showValidation'></div>");
     		}
 
     		if (!venueVal) {
@@ -162,13 +168,19 @@ $(document).ready(function() {
     			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
     		}
 
-    		if (!selectpickerVal) {
-    			$("#selectpickerValidation").replaceWith("<div id='selectpickerValidation' class='alert alert-danger'> Please enter a title </div>");
-    		} else {
-    			$("#selectpickerValidation").replaceWith("<div id='selectpickerValidation'></div>");
-    		}
+   			if (!email) {
+   				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter an email </div>");
+   			} else {
+   				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+   			}
 
-    		if (document.getElementById("auditionsTable").rows.length <= 1) {
+   			if (!phoneNumber) {
+   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a phone number </div>");
+   			} else {
+   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation'></div>");
+   			}
+
+    		if (dateCount <= 1) {
     			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
     		} else {
     			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
@@ -176,17 +188,22 @@ $(document).ready(function() {
 
     	} else {
 	    	var data = {};
-    		var dates = new Array();
+    		var contactVal = [email, phoneNumber];
+    		var showId = document.getElementsByName(showVal)[0].getAttribute("data-id");
 
+    		data['show_id'] = showId;
+    		data['venue'] = venueVal;
+    		data['contact'] = contactVal;
+    		data['notes'] = $("#notes").val();
+    		data['date'] = [];
+
+    		var dates = [];
 	    	$('#auditionsTable > tbody  > tr').each(function() {
     			var isoDate = ($(this).data("date")).toISOString();
     			dates.push(isoDate);
 	    	});
 
-    		data['title'] = titleVal;
-    		data['venue'] = venueVal;
-	    	data['genre'] = selectpickerVal;
-    		data['date'] = dates;
+	    	data['date'] = dates;
 
 			// $.each(data, function( key, value ) {
 			//   alert( key + ": " + value );

@@ -12,13 +12,54 @@ var Company = require('../../models/').Company;
 router.get('/', function (req, res, next) {
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#ordering
 	var isShowOwner = false;
+	
+	var burlesque = [];
+	var comedy = [];
+	var musical = [];
+	var play = [];
+	var tragedy = [];
+	var romance = [];
+
 	if (!req.user) {
 		Show.findAll({
-		order: [
-			['title', 'DESC']
-		]
 		}).then(function(shows) {
-			res.render('shows.ejs', {shows: shows, isShowOwner: isShowOwner});
+			for (var i = 0; i < shows.length; i++) {
+				var JSONString = JSON.stringify(shows[i].genre);
+
+				if (JSONString.indexOf('Burlesque') != -1) {
+					burlesque.push(shows[i]);
+				}
+
+				if (JSONString.indexOf('Comedy') != -1) {
+					comedy.push(shows[i]);
+				}
+
+				if (JSONString.indexOf('Musical Theatre') != -1) {
+					musical.push(shows[i]);
+				}
+
+				if (JSONString.indexOf('Play') != -1) {
+					play.push(shows[i]);
+				}
+
+				if (JSONString.indexOf('Tragedy') != -1) {
+					tragedy.push(shows[i]);
+				}
+
+				if (JSONString.indexOf('Romance') != -1) {
+					romance.push(shows[i]);
+				}
+
+			}
+			res.render('shows.ejs', {
+				isShowOwner: isShowOwner,
+				burlesque: burlesque,
+				comedy: comedy,
+				musical: musical,
+				play: play,
+				tragedy: tragedy,
+				romance: romance
+			});
 		}).catch(function(err) {
 			console.log(err);
 		});
@@ -39,11 +80,42 @@ router.get('/', function (req, res, next) {
 						}
 
 						Show.findAll({
-							order: [
-								['title', 'DESC']
-							]
 						}).then(function(shows) {
-							res.render('shows.ejs', {shows: shows, isShowOwner: isShowOwner});
+							for (var i = 0; i < shows.length; i++) {
+								var JSONString = JSON.stringify(shows[i].genre);
+								if (JSONString.includes('Burlesque')) {
+									burlesque.push(shows[i]);
+								}
+
+								if (JSONString.includes('Comedy')) {
+									comedy.push(shows[i]);
+								}
+
+								if (JSONString.includes('Musical Theatre')) {
+									musical.push(shows[i]);
+								}
+
+								if (JSONString.includes('Play')) {
+									play.push(shows[i]);
+								}
+
+								if (JSONString.includes('Tragedy')) {
+									tragedy.push(shows[i]);
+								}
+
+								if (JSONString.includes('Romance')) {
+									romance.push(shows[i]);
+								}
+							}
+							res.render('shows.ejs', {
+								isShowOwner: isShowOwner,
+								burlesque: burlesque,
+								comedy: comedy,
+								musical: musical,
+								play: play,
+								tragedy: tragedy,
+								romance: romance
+							});
 						}).catch(function(err) {
 							console.log(err);
 						});
@@ -55,6 +127,40 @@ router.get('/', function (req, res, next) {
 		});
 
 	}
+	// var isShowOwner = false;
+	// Show.findAll({
+	// 	order: [
+	// 		['title', 'DESC']
+	// 	]
+	// }).then(function(shows) {
+	// 	if (!req.user) {
+
+	// 	} else {
+	// 		User.findById(req.user.id)
+	// 			.then(function(user) {
+	// 				if (!user) {
+	// 				}
+
+	// 				if (user.role ==='user') {
+	// 				} else {	
+	// 					Company.findById(user.role)
+	// 					.then(function (company) {
+	// 						if (company) {
+	// 							isShowOwner = true;
+	// 						}
+	// 					}).catch(function(err) {
+	// 						console.log(err);
+	// 					});			
+	// 				}
+	// 			}).catch(function(err) {
+	// 				console.log(err);
+	// 			});
+	// 	}
+	// 	res.render('shows.ejs', {shows: shows, isShowOwner: isShowOwner});
+	// }).catch(function(err) {
+	// 	console.log(err);
+	// });
+
 });
 
 
@@ -69,17 +175,12 @@ router.post('/addshow', showOwnerAuthorize, function (req, res, next) {
 			if (!user) {
 				// no such user found
 				res.status(404).send("Sorry, something went wrong with your request.");
-			} else {
-				var genres = [];
-				var dates = [];
-				genres.push(req.body["genre[]"]);
-				dates.push(req.body["date[]"]);
-								
+			} else {				
 				Show.create({
 					'title': req.body.title,
 					'venue': req.body.venue,
-					'genre': genres,
-					'date': dates,
+					'genre': req.body["genre[]"],
+					'date': req.body['date[]'],
 					'company_id': user.role
 				}).then(function (show) {
 					return res.send(show);

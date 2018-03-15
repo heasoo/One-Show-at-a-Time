@@ -4,17 +4,7 @@
     <% include ./head %>
 </head>
 <% include ./header %>
-<style>
-/*ul {
-	display:inline-block;
-}*/
 
-/*li {
-	display:inline-block;
-	list-style-type: none;
-	margin-bottom:10px;
-}*/
-</style>
 	<div class="page-header text-center">
 		<button class="btn pull-right btn-success" id="create"> Create show</button>
 		<h2>Add a Show</h2>
@@ -43,12 +33,25 @@
 				<label class="control-label col-sm-2" for="genre">Genre(s): </label>
 				<div class="col-sm-8">
 					<select class="selectpicker" multiple>
+  						<option>Burlesque</option>
   						<option>Comedy</option>
+  						<option>Musical Theatre</option>
+  						<option>Play</option>
   						<option>Romance</option>
-  						<option>Thriller</option>
+  						<option>Tragedy</option>
   						<!-- TODO: add more in alphabetical order -->
 					</select>
-					<div id="selectpickerValidation"></div>
+					<div id="genreValidation"></div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2">Upload photo: </label>
+				<div class="col-sm-8">
+					<label class="btn btn-primary" for="photo">
+    					<input id="photo" type="file" accept="image/*" style="display:none" onchange="$('#photo-info').html(this.files[0].name)">Browse photos
+					</label>
+					<span class='label label-info' id="photo-info"></span>
 				</div>
 			</div>
 
@@ -141,10 +144,11 @@ $(document).ready(function() {
 
     	var titleVal = $("#title").val();
     	var venueVal = $("#venue").val();
-    	var selectpickerVal = $(".selectpicker").val();
+    	var genreVal = $(".selectpicker").val();
+    	var dateCount = document.getElementById("showingsTable").rows.length;
 
     	// Form Validation
-    	if (!titleVal || !venueVal || !selectpickerVal) {
+    	if (!titleVal || !venueVal || !genreVal || dateCount <= 1) {
     		if (!titleVal) {
     			$("#titleValidation").replaceWith("<div id='titleValidation' class='alert alert-danger'> Please enter a title </div>");
     		} else {
@@ -157,33 +161,36 @@ $(document).ready(function() {
     			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
     		}
 
-    		if (!selectpickerVal) {
-    			$("#selectpickerValidation").replaceWith("<div id='selectpickerValidation' class='alert alert-danger'> Please enter a title </div>");
+    		if (!genreVal) {
+    			$("#genreValidation").replaceWith("<div id='genreValidation' class='alert alert-danger'> Please pick at least one genre </div>");
     		} else {
-    			$("#selectpickerValidation").replaceWith("<div id='selectpickerValidation'></div>");
+    			$("#genreValidation").replaceWith("<div id='genreValidation'></div>");
     		}
 
-    		if (document.getElementById("showingsTable").rows.length <= 1) {
+    		if (dateCount <= 1) {
     			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
     		} else {
     			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
     		}
 
     	} else {
-	    	var data = {};
-    		var dates = new Array();
+    		var data = {};
+    		data['title'] = titleVal;
+    		data['venue'] = venueVal;
+	    	data['genre'] = genreVal;
+    		data['date'] = [];
+    		//TODO:  		data['photo'] = 
 
+
+    		var dates = [];
 	    	$('#showingsTable > tbody  > tr').each(function() {
     			var isoDate = ($(this).data("date")).toISOString();
     			dates.push(isoDate);
 	    	});
 
-    		data['title'] = titleVal;
-    		data['venue'] = venueVal;
-	    	data['genre'] = selectpickerVal;
-    		data['date'] = dates;
+	    	data['date'] = dates;
 
-			// $.each(data, function( key, value ) {
+			// $.each(date, function( key, value ) {
 			//   alert( key + ": " + value );
 			// });
 

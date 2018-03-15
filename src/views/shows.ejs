@@ -14,7 +14,40 @@
 	</div>
 
 	<div class="container">
-		<%=shows%>
+		<div class="row">
+			<div class="column">
+				<img class="slideshow cursor" src="">		<!-- TODO src -->
+			</div>
+		</div>
+		<h3>Comedy</h3>
+		<% comedy.forEach(function(comedyShow) {%>
+			<p><%=comedyShow.title%></p>
+  		<% }); %>
+
+		<h3>Romance</h3>
+		<% romance.forEach(function(romanceShow) {%>
+			<p><%=romanceShow.title%></p>
+  		<% }); %>
+
+  		<h3>Musical Theatre</h3>
+		<% musical.forEach(function(musicalShow) {%>
+			<p><%=musicalShow.title%></p>
+  		<% }); %>
+
+  		<h3>Burlesque</h3>
+ 		<% burlesque.forEach(function(burlesqueShow) {%>
+			<p><%=burlesqueShow.title%></p>
+  		<% }); %> 		
+
+  		<h3>Play</h3>
+		<% play.forEach(function(playShow) {%>
+			<p><%=playShow.title%></p>
+  		<% }); %>
+
+  		<h3>Tragedy</h3>
+		<% tragedy.forEach(function(tragedyShow) {%>
+			<p><%=tragedyShow.title%></p>
+  		<% }); %>
 	</div>
 
         </div>

@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = (sequelize, DataTypes) => {
   var Audition = sequelize.define('Audition', {
   	id: {
@@ -15,14 +16,18 @@ module.exports = (sequelize, DataTypes) => {
   		type: DataTypes.STRING,
   		allowNull: false
   	},
-  	desc: {
+  	notes: {
   		type: DataTypes.STRING,
-  		allowNull: false
+  		allowNull: true
   	},
     contact: {
-      type: DataTypes.ARRAY(DataTypes.DATE),
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false
-    }
+    },
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }    
  },
 {
   freezeTableName: true,

@@ -24,9 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false
     },
-    company_id: {
-      type: DataTypes.UUID
-    }
+    photo: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }   
  },
 {
   freezeTableName: true,
