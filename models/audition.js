@@ -24,10 +24,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false
     },
-    photo: {
+    picture: {
       type: DataTypes.STRING,
-      allowNull: true
-    }    
+      allowNull: false,
+      defaultValue: '/images/default-audition-picture.jpg'
+    },
+    show_id: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
  },
 {
   freezeTableName: true,

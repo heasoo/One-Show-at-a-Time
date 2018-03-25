@@ -1,0 +1,15 @@
+{
+  "name": "ArtLive",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Heasoo Lee <leeheasoo@hotmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/heasoo/One-Show-at-a-Time",
+  "private": true,
+  "dependencies": {
+    "dm-file-uploader": "^1.0.2",
+    "blueimp-file-upload": "jquery-file-upload#^9.21.0"
+  }
+}

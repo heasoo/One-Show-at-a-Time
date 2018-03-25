@@ -46,7 +46,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/shows', shows);
 app.use('/auditions', auditions);
-
+app.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
 
 
 // catch 404 and forward to error handler

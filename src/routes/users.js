@@ -24,17 +24,12 @@ var storage = multer.diskStorage({
 			throw new Error('Upload file not an image.');
 		}
 
-		LocalUser.update({
-			'profile_picture': '/images/' + req.user.id + '.' + extension
-			}, {
-			where: {
-				'id': req.user.id
-			}
-		}).then(function(updated) {
-			console.log('updated');
-		}).catch(function(err) {
-			console.log(err);
-		});
+		LocalUser.findById(req.user.id)
+			.then(function(localuser) {
+				localuser.profile_picture = '/images/' + req.user.id + '.' + extension;
+			}).catch(function(err) {
+				console.log(err);
+			});
 		callback(null, req.user.id + '.' + extension);
 	}
 });
@@ -105,7 +100,7 @@ router.get('/logout', authorize.loggedIn, function(req, res) {
 		req.session.destroy(function (err) {
 	  		if (err) return next(err);
     		res.clearCookie('connect.sid');
-    		res.redirect('https://www.facebook.com/logout.php?next='+TEST_URL+ '&access_token='+ACCESS_TOKEN);
+    		res.redirect('https://www.facebook.com/logout.php?next=' + TEST_URL + '&access_token=' + ACCESS_TOKEN); /*TODO change testurl to real*/
 		});	
 	} else {
 		req.session.destroy(function (err) {

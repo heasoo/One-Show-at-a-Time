@@ -5,50 +5,280 @@
 </head>
 <% include ./header %>
 
+<style>
+.browse-show-section{float: left;width: 100%;}
+.browse-show .photo {width: 250px; height: 250px; display: inline-block; overflow: hidden; position: relative; }
+.col-item{position: relative;}
+.browse-show{margin-top: 60px;}
+.browse-show .photo img{width: 100%;    vertical-align: middle;position: relative;}
+.carousel-line > .controls{position: absolute; bottom: -16px; left: 50%; margin-left: -50px; background: #fff; padding: 0px 20px; color: #000;}
+.carousel-line > .controls > a{    color: #868686; font-size: 24px; font-weight: 300;}
+
+</style>
 
 	<div class="page-header text-center">
 		<% if (isShowOwner) { %>
 		<button class="btn pull-right btn-success" onclick="location.href='/shows/addshow';"> Create show</button>
 		<% } %>
-		<h2>Shows</h2>
+		<h2>Browse Shows</h2>
 	</div>
+
 
 	<div class="container">
 		<div class="row">
-			<div class="column">
-				<img class="slideshow cursor" src="">		<!-- TODO src -->
+			<h2>Musical Theatre</h2>
+			<div id="musical-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#musical-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#musical-carousel" data-slide="next"></a>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count1 = 0; %>
+							<% musical.forEach(function(musicalShow) { %>
+								<% if (count1 != 0 && count1 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<%=musicalShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
+
+								<% count1++; %>
+		  				<% }); %>
+
+						</div>
+					</div>
+				</div>
+				
 			</div>
 		</div>
-		<h3>Comedy</h3>
-		<% comedy.forEach(function(comedyShow) {%>
-			<p><%=comedyShow.title%></p>
-  		<% }); %>
 
-		<h3>Romance</h3>
-		<% romance.forEach(function(romanceShow) {%>
-			<p><%=romanceShow.title%></p>
-  		<% }); %>
+		<div class="row">
+			<h2>Plays</h2>
+			<div id="play-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#play-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#play-carousel" data-slide="next"></a>
+					</div>
+				</div>
 
-  		<h3>Musical Theatre</h3>
-		<% musical.forEach(function(musicalShow) {%>
-			<p><%=musicalShow.title%></p>
-  		<% }); %>
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count2 = 0; %>
+							<% play.forEach(function(playShow) { %>
+								<% if (count2 != 0 && count2 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
 
-  		<h3>Burlesque</h3>
- 		<% burlesque.forEach(function(burlesqueShow) {%>
-			<p><%=burlesqueShow.title%></p>
-  		<% }); %> 		
+							<div class="col-sm-3">
+								<%=playShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
 
-  		<h3>Play</h3>
-		<% play.forEach(function(playShow) {%>
-			<p><%=playShow.title%></p>
-  		<% }); %>
+								<% count2++; %>
+		  				<% }); %>
 
-  		<h3>Tragedy</h3>
-		<% tragedy.forEach(function(tragedyShow) {%>
-			<p><%=tragedyShow.title%></p>
-  		<% }); %>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>		
+
+		<div class="row">
+			<h2>Comedy</h2>
+			<div id="comedy-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#comedy-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#comedy-carousel" data-slide="next"></a>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count3 = 0; %>
+							<% comedy.forEach(function(comedyShow) { %>
+								<% if (count3 != 0 && count3 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<%=comedyShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
+
+								<% count3++; %>
+		  				<% }); %>
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="row">
+			<h2>Romance</h2>
+			<div id="romance-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#romance-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#romance-carousel" data-slide="next"></a>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count4 = 0; %>
+							<% romance.forEach(function(romanceShow) { %>
+								<% if (count4 != 0 && count4 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<%=romanceShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
+
+								<% count4++; %>
+		  				<% }); %>
+
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="row">
+			<h2>Burlesque</h2>
+			<div id="burlesque-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#burlesque-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#burlesque-carousel" data-slide="next"></a>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count5 = 0; %>
+							<% burlesque.forEach(function(burlesqueShow) { %>
+								<% if (count5 != 0 && count5 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<%=burlesqueShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
+
+								<% count5++; %>
+		  				<% }); %>
+
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
+		<div class="row">
+			<h2>Tragedy</h2>
+			<div id="tragedy-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
+				<div class="carousel-line">
+					<div class="controls pull-right">
+						<a class="left fa fa-angle-left btn" href="#tragedy-carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#tragedy-carousel" data-slide="next"></a>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count6 = 0; %>
+							<% tragedy.forEach(function(tragedyShow) { %>
+								<% if (count6 != 0 && count6 % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<%=tragedyShow.title%>
+								<div class="col-item">
+									<div class="photo">
+										<!-- TODO INSERT PICTURE <img src=""> -->
+									</div>
+								</div>
+							</div>
+
+								<% count6++; %>
+		  				<% }); %>
+
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+
 	</div>
+
 
         </div>
         <!-- /#page-content-wrapper -->

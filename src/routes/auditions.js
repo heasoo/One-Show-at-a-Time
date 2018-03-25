@@ -81,19 +81,23 @@ router.get('/addaudition', showOwnerAuthorize, function (req, res, next) {
 });
 
 router.post('/addaudition', showOwnerAuthorize, function (req, res, next) {
+	var data = Object.values(req.body);
+	if (typeof data[4] == "string") {
+		data[4] = [data[4]];
+	}
+
 	User.findById(req.user.id)
 		.then(function (user) {
 			if (!user) {
 				// no such user found
 				res.status(404).send("Sorry, something went wrong with your request.");
 			} else {
-							
 				Audition.create({
-					'show_id': req.body.show_id,
-					'venue': req.body.venue,
-					'contact': req.body["contact[]"],
-					'notes': req.body.notes,
-					'date': req.body["date[]"],
+					'show_id': data[0],
+					'venue': data[1],
+					'contact': data[2],
+					'notes': data[3],
+					'date': data[4],
 					'company_id': user.role
 				}).then(function (audition) {
 					return res.send(audition);
