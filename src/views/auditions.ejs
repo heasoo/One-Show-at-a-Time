@@ -4,7 +4,12 @@
 	<% include ./head %>
 </head>
 <% include ./header %>
-
+<style>
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+</style>
 
 	<div class="page-header text-center">
 		<% if (isShowOwner) { %>
@@ -14,7 +19,26 @@
 	</div>
 
 	<div class="container">
-		<%=auditions%>
+		<table>
+			<!-- Column Name -->
+			<tr>
+				<th>Show</th>
+				<th>Audition Date(s)</th>
+				<th>Company</th>
+			</tr>
+
+			<!-- Column Rows -->
+			<script>
+				console.log(data.length);
+			</script>
+			<% data.forEach(function(datum) { %>
+			<tr>
+				<td><%=datum[1]%></td>
+				<td><%=datum[0].date%></td>
+				<td><%=datum[2]%></td>
+			</tr>
+			<% }) %>
+		</table>
 	</div>
 
         </div>

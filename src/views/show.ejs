@@ -4,12 +4,39 @@
 	<% include ./head %>
 </head>
 <% include ./header %>
+<style>
+* {
+  box-sizing: border-box;
+}
 
+/* Position the image container (needed to position the left and right arrows) */
+.container {
+  position: relative;
+}
+
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+</style>
 
 	<div class="page-header text-center">
 		<h2><%=title%></h2>
 	</div>
 	
+	<div class="container">
+    		<div class="row">
+    			<div class="column">
+      				<img src="/static<%=picture%>" style="width:100%">
+		      	</div>
+      			<div class="column">
+      				<p>Production Company: <%=company%></p>
+      				<p>Audition Dates: <%=date%></p>
+					<p>Audition Venue: <%=venue%></p>
+				</div>
+			</div>
+	</div>
 
 
         </div>

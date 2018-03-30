@@ -18,13 +18,6 @@ var storage = multer.diskStorage({
 		var mt = file.mimetype;
         var slashPos = mt.indexOf("/");
         var extension = mt.substring(slashPos + 1).toLowerCase();
-		// var showId = show.id;
-		// Show.findById(showId)
-		// 	.then(function(_show) {
-		// 		_show.picture = '/images/' + _show.id + '.' + extension;
-		// 	}).catch(function(err) {
-		// 		console.log(err);
-		// 	});
 
 		// if file by req.user.id exists already, delete it
 	    var files = fs.readdirSync('./public/images/');
@@ -40,21 +33,28 @@ var storage = multer.diskStorage({
 	    		});
 	    	}
 	    });
-		callback(null, req.user.id + '.' + extension);
+		return callback(null, req.user.id + '.' + extension);
 	}
 });
 
 var upload = multer({
-	storage : storage,
-	fileFilter: function (req, file, cb) {
+	fileFilter: function (req, file, callback) {
 		// images only
-    	if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
-    		console.log('not an image');
-    		req.fileValidationError = 'file is not an image';
-        	return cb(new Error('Only image files are allowed!'));
+		//var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+
+		var mt = file.mimetype;
+        var slashPos = mt.indexOf("/");
+        var extension = mt.substring(slashPos + 1).toLowerCase();
+
+    	if (!extension.match(/(jpg|jpeg|png)$/i)) {
+    		console.log('File is not an image');
+    		return callback(new Error('File is not an image.'));
+
 	    }
-	    cb(null, true);
-}}).single('fileupload');
+	    return callback(null, true);
+	},
+	storage : storage
+}).single('fileupload');
 
 router.get('/', function (req, res, next) {
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#ordering
@@ -65,7 +65,7 @@ router.get('/', function (req, res, next) {
 	var musical = [];
 	var play = [];
 	var tragedy = [];
-	var romance = [];
+	var romance = []; 
 
 	if (!req.user) {
 		Show.findAll({
@@ -234,7 +234,8 @@ router.post('/addshow', showOwnerAuthorize, function (req, res, next) {
 router.post('/uploadPhoto', showOwnerAuthorize, function(req, res, next) {
     upload(req,res,function(err) {
     	if (err) {
-    		return res.send({error: err});
+    		console.log(err);
+    		return res.status(500).send({ error: 'File is not an image.'});
     	}
         return res.send({result: 'picture uploaded'});
     });
@@ -250,13 +251,20 @@ router.get('/:showId', function(req, res, next) {
 				// no such show exists
 				res.status(404).send("Sorry, we can't find a show by that id.");
 			}
-
-			res.render('show.ejs', {
-				'title': show.title,
-				'venue': show.venue,
-				'genre': show.genre,
-				'date': show.date
-			});
+			Company.findById(show.company_id)
+				.then(function(company) {
+					res.render('show.ejs', {
+						'title': show.title,
+						'venue': show.venue,
+						'genre': show.genre,		/*TODO: put an appropriate glyphicon for each genre*/
+						'date': show.date,
+						'picture': show.picture,
+						'company': company.name
+					});
+				}).catch(function (err) {
+					res.status(404).send("Sorry, we can't find a show by that id.");
+					console.log(err);
+				});
 		}).catch(function (err) {
 			// invalid input format
 			res.status(404).send("Sorry, we can't find a show by that id.");

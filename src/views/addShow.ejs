@@ -39,7 +39,7 @@
   						<option>Play</option>
   						<option>Romance</option>
   						<option>Tragedy</option>
-  						<!-- TODO: add more in alphabetical order -->
+  						<!-- TODO: add more/less in alphabetical order -->
 					</select>
 					<div id="genreValidation"></div>
 				</div>
@@ -50,9 +50,9 @@
 				<div class="col-sm-8">
 					<label class="btn btn-primary" for="picture">
 						<input id="fileupload" type="file" name="fileupload" onchange="$('#picture-info').html(this.files[0].name)" data-url="/shows/uploadPhoto" multiple>
-    				<!-- 	<input id="picture" type="file" accept="image/*" style="display:none" onchange="$('#picture-info').html(this.files[0].name)">Browse pictures -->
 					</label>
 					<span class='label label-info' id="picture-info"></span>
+					<div id="pictureValidation"></div>
 
 <!-- 					$(':file').on('change', function() {
     var file = this.files[0];
@@ -63,7 +63,6 @@
     // Also see .name, .type
 }); -->
 				</div>
-				<div id="pictureValidation"></div>
 			</div>
 
 
@@ -120,15 +119,10 @@ $(document).ready(function() {
             $.each(data.result.files, function (index, file) {
                 $('<p/>').text(file.name).appendTo(document.body);
             });
+            $("#pictureValidation").replaceWith("<div id='pictureValidation'></div>");
         },
-        fail: function(e, data) {
-        	if (data) {
-        		console.log(data);
-    			$("#pictureValidation").replaceWith("<div id='pictureValidation' class='alert alert-danger'> Please enter a title </div>");
-    		} else {
-    			$("#pictureValidation").replaceWith("<div id='pictureValidation'></div>");
-    		}
-
+        fail: function (e, data) {
+    		$("#pictureValidation").replaceWith("<div id='pictureValidation' class='alert alert-danger'> The file is not an image. </div>");
         }
     });
 

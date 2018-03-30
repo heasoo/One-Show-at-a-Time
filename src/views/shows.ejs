@@ -6,14 +6,77 @@
 <% include ./header %>
 
 <style>
-.browse-show-section{float: left;width: 100%;}
-.browse-show .photo {width: 250px; height: 250px; display: inline-block; overflow: hidden; position: relative; }
-.col-item{position: relative;}
-.browse-show{margin-top: 60px;}
-.browse-show .photo img{width: 100%;    vertical-align: middle;position: relative;}
-.carousel-line > .controls{position: absolute; bottom: -16px; left: 50%; margin-left: -50px; background: #fff; padding: 0px 20px; color: #000;}
-.carousel-line > .controls > a{    color: #868686; font-size: 24px; font-weight: 300;}
+/* Browse Shows carousel CSS */
+.browse-show .photo {
+  width: 16.66%;
+  height: 100%;
+  display: inline-block; 
+  overflow: hidden; 
+  position: relative; 
+}
 
+.col-item {
+  position: relative;
+}
+
+.browse-show {
+  margin-top: 60px;}
+
+.browse-show .picture img {
+  width: 100%;
+  height:100%;
+  vertical-align: middle;position: relative;
+}
+
+.carousel-line > .controls {
+  position: absolute; 
+  bottom: -40px; 
+  left: 50%; 
+  margin-left: -50px;
+  background: #fff;
+  padding: -50px 20px;
+  color: #000;
+}
+
+.carousel-line > .controls > a {
+  color: #868686;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.carousel-line > .controls > a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.carousel-img:hover {
+  opacity: 1;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: .5s ease;
+}
+
+.picture:hover .overlay {
+  opacity: 1;
+}
+
+/* Bottom left text */
+.bottom-left {
+  color: black;
+  font-size: 20px;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+}
 </style>
 
 	<div class="page-header text-center">
@@ -22,7 +85,6 @@
 		<% } %>
 		<h2>Browse Shows</h2>
 	</div>
-
 
 	<div class="container">
 		<div class="row">
@@ -49,16 +111,18 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=musicalShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img class="carousel-img" src="/static<%=musicalShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=musicalShow.id%>'">
+											<div class="bottom-left"><%=musicalShow.title%></div>
+										</div>
 									</div>
 								</div>
 							</div>
 
 								<% count1++; %>
-		  				<% }); %>
+		  					<% }); %>
 
 						</div>
 					</div>
@@ -91,10 +155,12 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=playShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img src="/static<%=playShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=playShow.id%>';">
+											<div class="bottom-left"><%=playShow.title%></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -133,10 +199,12 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=comedyShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img src="/static<%=comedyShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=comedyShow.id%>';">
+											<div class="bottom-left"><%=comedyShow.title%></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -175,10 +243,12 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=romanceShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img src="/static<%=romanceShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=romanceShow.id%>';">
+											<div class="bottom-left"><%=romanceShow.title%></div>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -217,10 +287,12 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=burlesqueShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img src="/static<%=burlesqueShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=burlesqueShow.id%>';">
+											<div class="bottom-left"><%=burlesqueShow.title%></div>
+										</div>										
 									</div>
 								</div>
 							</div>
@@ -259,10 +331,12 @@
 								<% } %>
 
 							<div class="col-sm-3">
-								<%=tragedyShow.title%>
 								<div class="col-item">
-									<div class="photo">
-										<!-- TODO INSERT PICTURE <img src=""> -->
+									<div class="picture">
+										<img src="/static<%=tragedyShow.picture%>">
+										<div class="overlay" onclick="location.href='/shows/<%=tragedyShow.id%>';">
+											<div class="bottom-left"><%=tragedyShow.title%></div>
+										</div>
 									</div>
 								</div>
 							</div>

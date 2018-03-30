@@ -11,13 +11,41 @@ var Show = require('../../models/').Show;
 router.get('/', function (req, res, next) {
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#ordering
 	var isShowOwner = false;
+	var data = [];
 	if (!req.user) {
 		Audition.findAll({
 		order: [
 			['date', 'DESC']
 		]
 		}).then(function(auditions) {
-			res.render('auditions.ejs', {auditions: auditions, isShowOwner: isShowOwner});
+			var dataArray = [];
+			var shows = [];
+			var companies = [];
+
+
+				auditions.forEach(function(audition) {
+				// var _audition = Object.values(audition);
+				var datum = [];
+				datum.push(audition);
+
+				Show.findById(audition.show_id)
+					.then(function(show) {
+						datum.push(show.title);
+						Company.findById(show.company_id)
+							.then(function(company) {
+								datum.push(company.name);
+								dataArray.push(datum);
+							}).catch(function(err) {
+								console.log(err);
+							});
+					}).catch(function(err) {
+						console.log(err);
+					});
+				});
+
+
+				console.log(dataArray);
+			res.render('auditions.ejs', {data: dataArray, isShowOwner: isShowOwner});
 		}).catch(function(err) {
 			console.log(err);
 		});
