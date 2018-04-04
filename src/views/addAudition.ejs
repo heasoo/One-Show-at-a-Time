@@ -46,10 +46,10 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="contact">Contact: </label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" id="email" placeholder="Email">
+					<input type="email" class="form-control" id="email" placeholder="Email">
 					<div id="emailValidation"></div>
 					<br>
-					<input type="text" class="form-control" id="phoneNumber" placeholder="Phone Number">
+					<input type="tel" maxlength="12" class="form-control" id="phoneNumber" placeholder="Phone Number">
 					<div id="phoneNumberValidation"></div>
 				</div>
 			</div>			
@@ -115,7 +115,23 @@ $(document).ready(function() {
         sideBySide: true,
         minDate: minDateValue,
         maxDate: maxDateValue
-    });	
+    });	 
+
+    $('#email').focusout(function() {
+    	var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+    
+		if(!pattern.test($("#email").val())) {
+			// email is valid
+			$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email </div>");
+		} else {
+			// email is valid
+   			$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+   		}
+    });
+
+	$('#phoneNumber').keyup(function() {
+    	$(this).val($(this).val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3'))
+	});
 
 	$("#addAudition").click(function(e) {
 		e.preventDefault();
@@ -152,6 +168,7 @@ $(document).ready(function() {
     	var venueVal = $("#venue").val();
     	var email = $("#email").val();
     	var phoneNumber = $("#phoneNumber").val();
+    	phoneNumber.replace(/-/g,"");
     	var dateCount = document.getElementById("auditionsTable").rows.length;
 
     	// Form Validation
@@ -169,15 +186,25 @@ $(document).ready(function() {
     		}
 
    			if (!email) {
+   				// no email inputted
    				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter an email </div>");
    			} else {
+   				// email inputted
    				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
    			}
 
    			if (!phoneNumber) {
+   				// no phone number inputted
    				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a phone number </div>");
    			} else {
-   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation'></div>");
+   				// phone number inputted
+   				if(!phoneNumber.length === 12) {
+   					// invalid phone number
+   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a valid phone number </div>");
+   				} else {
+   					// valid phone number
+   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation'></div>");
+   				}
    			}
 
     		if (dateCount <= 1) {

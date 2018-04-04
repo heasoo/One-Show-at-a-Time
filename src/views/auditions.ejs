@@ -19,25 +19,25 @@ table {
 	</div>
 
 	<div class="container">
-		<table>
-			<!-- Column Name -->
-			<tr>
-				<th>Show</th>
-				<th>Audition Date(s)</th>
-				<th>Company</th>
-			</tr>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Show</th>
+					<th>Audition Date(s)</th>
+					<th>Company</th>
+				</tr>
+			</thead>
 
 			<!-- Column Rows -->
-			<script>
-				console.log(data.length);
-			</script>
-			<% data.forEach(function(datum) { %>
-			<tr>
-				<td><%=datum[1]%></td>
-				<td><%=datum[0].date%></td>
-				<td><%=datum[2]%></td>
-			</tr>
-			<% }) %>
+			<tbody>
+				<% data.forEach(function(datum) { %>
+				<tr onclick="location.href='/auditions/<%=datum.id%>';">
+					<td ><%=datum.show%></td>
+					<td><%=datum.date%></td>
+					<td><%=datum.company%></td>
+				</tr>
+				<% }) %>
+		</tbody>
 		</table>
 	</div>
 

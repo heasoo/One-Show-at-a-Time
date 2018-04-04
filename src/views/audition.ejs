@@ -4,21 +4,46 @@
 	<% include ./head %>
 </head>
 <% include ./header %>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Position the image container (needed to position the left and right arrows) */
+.container {
+  position: relative;
+}
+
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+</style>
 
 
 	<div class="page-header text-center">
-		<h2><%=title%></h2>
+		<h2><%=show.title%></h2>
 		Audition
 	</div>
 	
+	<div class="container">
+    	<div class="row">
+    	  <div class="column">
+      			<img src="/static<%=show.picture%>" style="width:100%">
+		    </div>
+    	  	<div class="column">
+      			<p>Production Company: <%=companyName%></p>
+				<p>Audition Dates: <%=audition.date%></p>
+				<p>Audition Venue: <%=audition.venue%></p>
+				<p>Production Dates: <%=show.date%></p>
+				<p>Production Venue: <%=show.venue%></p>
+				<p>Contact: <%=audition.contact%></p>
+				<p>Notes: <%=audition.notes%></p>
+			</div>
+		</div>
+	</div>
 
-	<p>Production Company: <-- TODO --></p>
-	<p>Audition Dates: <%=date%></p>
-	<p>Audition Venue: <%=venue%></p>
-	<p>Production Dates: <-- TODO --></p>
-	<p>Production Venue: <-- TODO --></p>
-	<p>Contact: <%=contact%></p>
-	<p>Notes: <%=notes%></p>
 
 
         </div>

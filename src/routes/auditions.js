@@ -11,41 +11,43 @@ var Show = require('../../models/').Show;
 router.get('/', function (req, res, next) {
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#ordering
 	var isShowOwner = false;
-	var data = [];
+	var dataArray = [];
+
 	if (!req.user) {
-		Audition.findAll({
+		Audition.findAndCountAll({
 		order: [
 			['date', 'DESC']
 		]
-		}).then(function(auditions) {
-			var dataArray = [];
-			var shows = [];
-			var companies = [];
+		}).then(function(result) {
+			var completedRequests = 0;
 
-
-				auditions.forEach(function(audition) {
-				// var _audition = Object.values(audition);
-				var datum = [];
-				datum.push(audition);
-
-				Show.findById(audition.show_id)
+			for(let i = 0; i < result.count; i++) {
+				Show.findById(result.rows[i].show_id)
 					.then(function(show) {
-						datum.push(show.title);
 						Company.findById(show.company_id)
 							.then(function(company) {
-								datum.push(company.name);
-								dataArray.push(datum);
+								completedRequests++;
+
+								dataArray[i] = {
+									id: result.rows[i].id,
+									date: result.rows[i].date,
+									show: show.title,
+									company: company.name
+								};
+
+								console.log('completed requests: ' + completedRequests);
+
+								if (completedRequests == result.count) {
+									console.log(dataArray);
+									res.render('auditions.ejs', {data: dataArray, isShowOwner: isShowOwner});
+								}
 							}).catch(function(err) {
 								console.log(err);
 							});
 					}).catch(function(err) {
 						console.log(err);
 					});
-				});
-
-
-				console.log(dataArray);
-			res.render('auditions.ejs', {data: dataArray, isShowOwner: isShowOwner});
+			}
 		}).catch(function(err) {
 			console.log(err);
 		});
@@ -65,22 +67,53 @@ router.get('/', function (req, res, next) {
 						} else {
 						}
 
-						Audition.findAll({
+						Audition.findAndCountAll({
 							order: [
 								['date', 'DESC']
 							]
-						}).then(function(auditions) {
-							res.render('auditions.ejs', {auditions: auditions, isShowOwner: isShowOwner});
-						}).catch(function(err) {
-							console.log(err);
-						});
-				});
+							}).then(function(result) {
+								var completedRequests = 0;
+
+								for(let i = 0; i < result.count; i++) {
+									Show.findById(result.rows[i].show_id)
+										.then(function(show) {
+											Company.findById(show.company_id)
+												.then(function(company) {
+													completedRequests++;
+
+													dataArray[i] = {
+														id: result.rows[i].id,
+														date: result.rows[i].date,
+														show: show.title,
+														company: company.name
+													};
+
+													console.log('completed requests: ' + completedRequests);
+
+													if (completedRequests == result.count) {
+														console.log(dataArray);
+														res.render('auditions.ejs', {data: dataArray, isShowOwner: isShowOwner});
+													}
+												}).catch(function(err) {
+													console.log(err);
+												});
+										}).catch(function(err) {
+											console.log(err);
+										});
+								}
+							}).catch(function(err) {
+								console.log(err);
+							});
+
+			
+					}).catch(function(err) {
+						console.log(err);
+					});
 			}
 		}).catch(function(err) {
 			console.log(err);
 			res.redirect('/');
 		});
-
 	}
 });
 
@@ -152,13 +185,26 @@ router.get('/:auditionId', function(req, res, next) {
 
 			Show.findById(audition.show_id)
 				.then(function(show) {
+					Company.findById(show.company_id)
+						.then(function(company) {
+
 					res.render('audition.ejs', {
-						title: show.title,					
-						venue: audition.venue,
-						contact: audition.contact,
-						notes: audition.notes,
-						date: audition.date
+						show: show,
+						companyName: company.name,
+						audition: audition
+
+						// title: show.title,					
+						// venue: audition.venue,
+						// contact: audition.contact,
+						// notes: audition.notes,
+						// date: audition.date,
+						// company: company.name
 					});					
+						}).catch(function(err) {
+							console.log(err);
+						})
+
+
 				}).catch(function(err) {
 					console.log(err);
 				});
