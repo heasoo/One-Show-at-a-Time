@@ -23,6 +23,11 @@
 
 
 	<div class="page-header text-center">
+		<div id="divbutton">
+          <% if (isShowOwner) { %>
+          <button class="btn pull-right btn-default" id="editAudition"> Edit this audition</button>
+          <% } %>
+        </div>
 		<h2><%=show.title%></h2>
 		Audition
 	</div>
@@ -33,13 +38,34 @@
       			<img src="/static<%=show.picture%>" style="width:100%">
 		    </div>
     	  	<div class="column">
-      			<p>Production Company: <%=companyName%></p>
+      			<p>Production Company:<a href="/companies/<%=company.id%>"><%=company.name%></a></p>
 				<p>Audition Dates: <%=audition.date%></p>
-				<p>Audition Venue: <%=audition.venue%></p>
+				<% if (auditionIsValidGoogleMap) { %>
+				<p>Audition Venue: <a class="venue" data-id="<%=audition.venue%>"><%=auditionVenue%></a></p>
+				<% } else { %>
+				<p>Audition Venue: <%=auditionVenue%></p>
+				<% } %>
 				<p>Production Dates: <%=show.date%></p>
-				<p>Production Venue: <%=show.venue%></p>
+				<% if (showIsValidGoogleMap) { %>
+				<p>Production Venue: <a class="venue" data-id="<%=show.venue%>"><%=showVenue%></a></p>
+				<% } else { %>
+				<p>Production Venue: <%=showVenue%></p>
+				<% } %>
 				<p>Contact: <%=audition.contact%></p>
 				<p>Notes: <%=audition.notes%></p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="column">
+
+			</div>
+			<div class="column">
+				<h3>Creative</h3>
+          		<% creative.forEach(function(member) { %>
+			    <img class="img-circle" src="/static<%=member.profile_picture%>" style="width:20% ">
+          		<p><%=member.name%></p>
+          		<% }) %>
 			</div>
 		</div>
 	</div>
@@ -53,3 +79,19 @@
     <!-- /#wrapper -->
 </body>
 </html>
+
+<script>
+$(document).ready(function() {
+
+	$(".venue").on('click', function() {
+    	var venueId = $(this).data("id");
+	    window.location.href= "/venues/" + venueId;
+    });
+
+  $("#editAudition").on('click', function() {
+    var auditionIndex = window.location.href.indexOf("auditions") + 10;
+    var auditionId = window.location.href.substring(auditionIndex);
+    window.location.href= "/auditions/editaudition/" + auditionId;
+  });
+});
+</script>

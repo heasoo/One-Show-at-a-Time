@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     show_id: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     }
  },
 {
@@ -41,13 +41,15 @@ module.exports = (sequelize, DataTypes) => {
   Audition.associate = (models) => {
   	Audition.belongsTo(models.Show, {
   		foreignKey: 'show_id',
-  		targetKey: 'id'
+  		targetKey: 'id',
+      onDelete: 'CASCADE'
   	});
   	
   	Audition.belongsToMany(models.User, {
   		as: 'Auditionees',
-  		foreignKey: 'user_id',
-  		through: 'AttendingAudition'
+      through: 'AttendingAudition',
+  		foreignKey: 'audition_id',
+      otherKey: 'user_id'
   	});
   }
 

@@ -16,11 +16,13 @@
 }
 
 .col-item {
+	height:100%;
   position: relative;
 }
 
 .browse-show {
-  margin-top: 60px;}
+  margin-bottom: 30px;
+}
 
 .browse-show .picture img {
   width: 100%;
@@ -53,6 +55,10 @@
   opacity: 1;
 }
 
+.carousel-inner {
+	height: 200px;
+}
+
 .overlay {
   position: absolute;
   top: 0;
@@ -71,11 +77,22 @@
 
 /* Bottom left text */
 .bottom-left {
-  color: black;
+  color: #000;
+  text-shadow: 1px 0 0 #fff, 0 -1px 0 #fff, 0 1px 0 #fff, -1px 0 0 #fff;
   font-size: 20px;
   position: absolute;
-  bottom: 12px;
+  bottom: 15px;
   left: 12px;
+}
+
+.top-right {
+  color: #000;
+  text-shadow: 1px 0 0 #fff, 0 -1px 0 #fff, 0 1px 0 #fff, -1px 0 0 #fff;
+  font-size: 17px;
+  position: absolute;
+  top: 15px;
+  right: 12px;
+  text-align: right;
 }
 </style>
 
@@ -87,13 +104,16 @@
 	</div>
 
 	<div class="container">
+		<% if (musical.length > 0) { %>
 		<div class="row">
 			<h2>Musical Theatre</h2>
 			<div id="musical-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(musical).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#musical-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#musical-carousel" data-slide="next"></a>
+						<% } %>
 					</div>
 				</div>
 
@@ -115,6 +135,7 @@
 									<div class="picture">
 										<img class="carousel-img" src="/static<%=musicalShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=musicalShow.id%>'">
+											<div class="top-right"><%=musicalShow.closestDate%></div>
 											<div class="bottom-left"><%=musicalShow.title%></div>
 										</div>
 									</div>
@@ -130,14 +151,18 @@
 				
 			</div>
 		</div>
+		<% } %>
 
+		<% if (play.length > 0) { %>
 		<div class="row">
 			<h2>Plays</h2>
 			<div id="play-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(play).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#play-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#play-carousel" data-slide="next"></a>
+						<% } %>
 					</div>
 				</div>
 
@@ -159,6 +184,7 @@
 									<div class="picture">
 										<img src="/static<%=playShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=playShow.id%>';">
+											<div class="top-right"><%=playShow.closestDate%></div>
 											<div class="bottom-left"><%=playShow.title%></div>
 										</div>
 									</div>
@@ -173,15 +199,19 @@
 				</div>
 				
 			</div>
-		</div>		
+		</div>	
+		<% } %>	
 
+		<% if (comedy.length > 0) { %>
 		<div class="row">
 			<h2>Comedy</h2>
 			<div id="comedy-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(comedy).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#comedy-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#comedy-carousel" data-slide="next"></a>
+						<% } %>						
 					</div>
 				</div>
 
@@ -203,6 +233,7 @@
 									<div class="picture">
 										<img src="/static<%=comedyShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=comedyShow.id%>';">
+											<div class="top-right"><%=comedyShow.closestDate%></div>
 											<div class="bottom-left"><%=comedyShow.title%></div>
 										</div>
 									</div>
@@ -218,14 +249,18 @@
 
 			</div>
 		</div>
+		<% } %>	
 
+		<% if (romance.length > 0) { %>
 		<div class="row">
 			<h2>Romance</h2>
 			<div id="romance-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(romance).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#romance-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#romance-carousel" data-slide="next"></a>
+						<% } %>
 					</div>
 				</div>
 
@@ -247,6 +282,7 @@
 									<div class="picture">
 										<img src="/static<%=romanceShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=romanceShow.id%>';">
+											<div class="top-right"><%=romanceShow.closestDate%></div>
 											<div class="bottom-left"><%=romanceShow.title%></div>
 										</div>
 									</div>
@@ -262,14 +298,18 @@
 				
 			</div>
 		</div>
+		<% } %>	
 
+		<% if (burlesque.length > 0) { %>
 		<div class="row">
 			<h2>Burlesque</h2>
 			<div id="burlesque-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(burlesque).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#burlesque-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#burlesque-carousel" data-slide="next"></a>
+						<% } %>
 					</div>
 				</div>
 
@@ -291,6 +331,7 @@
 									<div class="picture">
 										<img src="/static<%=burlesqueShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=burlesqueShow.id%>';">
+											<div class="top-right"><%=burlesqueShow.closestDate%></div>
 											<div class="bottom-left"><%=burlesqueShow.title%></div>
 										</div>										
 									</div>
@@ -306,14 +347,18 @@
 				
 			</div>
 		</div>
+		<% } %>	
 
+		<% if (tragedy.length > 0) { %>
 		<div class="row">
 			<h2>Tragedy</h2>
 			<div id="tragedy-carousel" class="carousel slide browse-show browse-show-web-view" data-ride="carousel">
 				<div class="carousel-line">
 					<div class="controls pull-right">
+						<% if (Object.keys(tragedy).length > 4) { %>
 						<a class="left fa fa-angle-left btn" href="#tragedy-carousel" data-slide="prev"></a>
 						<a class="left fa fa-angle-right btn" href="#tragedy-carousel" data-slide="next"></a>
+						<% } %>
 					</div>
 				</div>
 
@@ -335,6 +380,7 @@
 									<div class="picture">
 										<img src="/static<%=tragedyShow.picture%>">
 										<div class="overlay" onclick="location.href='/shows/<%=tragedyShow.id%>';">
+											<div class="top-right"><%=tragedyShow.closestDate%></div>
 											<div class="bottom-left"><%=tragedyShow.title%></div>
 										</div>
 									</div>
@@ -350,6 +396,7 @@
 				
 			</div>
 		</div>
+		<% } %>	
 
 	</div>
 

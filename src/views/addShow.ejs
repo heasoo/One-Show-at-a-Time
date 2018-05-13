@@ -4,6 +4,15 @@
     <% include ./head %>
 </head>
 <% include ./header %>
+<style>
+.alert {
+  margin-bottom: 1px;
+  height: 30px;
+  line-height:30px;
+  padding:0px 15px;
+}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI&libraries=places&callback=initAutocomplete" async defer></script>
 
 	<div class="page-header text-center">
 		<button class="btn pull-right btn-success" id="create"> Create show</button>
@@ -16,17 +25,37 @@
 				<label class="control-label col-sm-2" for="title">Title: </label>
 				<div class="col-sm-8">
 					<input type="text" class="form-control" id="title" name="title" required="true">
-					<div id="titleValidation"></div>
+					<div style="padding: 5px;">
+						<div id="titleValidation" class="validation"></div>
+					</div>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="venue">Venue: </label>
+				<label class="control-label col-sm-2" for="venue">Venue: </label>	
 				<div class="col-sm-8">
-					<input type="text" class="form-control" id="venue" name="venue">
-					<div id="venueValidation"></div>
+					<input id="pac-input" class="form-control" type="text" placeholder="">
+					<div style="padding: 5px;">
+						<div id="venueValidation"></div>
+					</div>
 				</div>
 			</div>
+			<script>
+				function initAutocomplete() {
+					// https://developers.google.com/maps/documentation/javascript/places-autocomplete
+  					// Create the search box and link it to the UI element.
+					var input = document.getElementById('pac-input');
+					var options = {
+						//bounds: defaultBounds
+						types: ['geocode', 'establishment'],
+						placeIdOnly: true		// PlaceResult: {place id, name, types}
+					}
+				  	autocomplete = new google.maps.places.Autocomplete(input, options);
+
+				  	// When the user selects an address from the dropdown, save the result into placeResult variable
+  					// autocomplete.addListener('place_changed', fillInPlaceResultVariable);
+				}
+			</script>
 
 			<!-- https://silviomoreto.github.io/bootstrap-select/options/ -->
 			<div class="form-group">
@@ -41,7 +70,9 @@
   						<option>Tragedy</option>
   						<!-- TODO: add more/less in alphabetical order -->
 					</select>
-					<div id="genreValidation"></div>
+					<div style="padding: 5px;">
+						<div id="genreValidation"></div>
+					</div>
 				</div>
 			</div>
 
@@ -49,19 +80,20 @@
 				<label class="control-label col-sm-2">Upload picture: </label>
 				<div class="col-sm-8">
 					<label class="btn btn-primary" for="picture">
-						<input id="fileupload" type="file" name="fileupload" onchange="$('#picture-info').html(this.files[0].name)" data-url="/shows/uploadPhoto" multiple>
+						<input id="fileupload" type="file" name="fileupload" onchange="$('#picture-info').html(this.files[0].name)" data-url="/shows/uploadPhoto">
 					</label>
 					<span class='label label-info' id="picture-info"></span>
-					<div id="pictureValidation"></div>
+					<div style="padding: 5px;">
+						<div id="pictureValidation"></div>
+					</div>
+					<!-- $(':file').on('change', function() {
+   	 					var file = this.files[0];
+    					if (file.size > 1024) {
+        					alert('max upload size is 1k')
+    				}
 
-<!-- 					$(':file').on('change', function() {
-    var file = this.files[0];
-    if (file.size > 1024) {
-        alert('max upload size is 1k')
-    }
-
-    // Also see .name, .type
-}); -->
+    				// Also see .name, .type
+					}); -->
 				</div>
 			</div>
 
@@ -79,7 +111,9 @@
 				        </div>
 					</div>
 					<button class="btn btn-primary" id="addShow">Add show time</button>
-					<div id='dateValidation'></div>
+					<div style="padding: 5px;">
+						<div id='dateValidation'></div>
+					</div>
 				</div>			
 			</div>
 			
@@ -110,6 +144,7 @@
     <!-- /#wrapper -->
 
 <script>
+var autocomplete;
 
 $(document).ready(function() {
 
@@ -154,6 +189,7 @@ $(document).ready(function() {
         var markup = $("<tr><td><input type='checkbox' name='record'></td><td>" + month + " " + day + " " + year + "</td><td>" + hours + ":" + minute + " " + suffix + "</td></tr>");
         markup.data("date", date);
         $("#showingsTableBody").append(markup);
+
     });
 
     $("#deleteShow").click(function(e){
@@ -169,7 +205,7 @@ $(document).ready(function() {
     	e.preventDefault();
 
     	var titleVal = $("#title").val();
-    	var venueVal = $("#venue").val();
+    	var venueVal = $("#pac-input").val();
 
     	var genreVal = $(".selectpicker").val();
     	var dateCount = document.getElementById("showingsTable").rows.length;
@@ -177,25 +213,25 @@ $(document).ready(function() {
     	// Form Validation
     	if (!titleVal || !venueVal || !genreVal || dateCount <= 1) {
     		if (!titleVal) {
-    			$("#titleValidation").replaceWith("<div id='titleValidation' class='alert alert-danger'> Please enter a title </div>");
+    			$("#titleValidation").replaceWith("<div id='titleValidation' class='alert alert-danger validation'> Please enter a title. </div>");
     		} else {
     			$("#titleValidation").replaceWith("<div id='titleValidation'></div>");
     		}
 
     		if (!venueVal) {
-    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue </div>");
+    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue. </div>");
     		} else {
     			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
     		}
 
     		if (!genreVal) {
-    			$("#genreValidation").replaceWith("<div id='genreValidation' class='alert alert-danger'> Please pick at least one genre </div>");
+    			$("#genreValidation").replaceWith("<div id='genreValidation' class='alert alert-danger'> Please pick at least one genre. </div>");
     		} else {
     			$("#genreValidation").replaceWith("<div id='genreValidation'></div>");
     		}
 
     		if (dateCount <= 1) {
-    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
+    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date. </div>");
     		} else {
     			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
     		}
@@ -204,20 +240,48 @@ $(document).ready(function() {
 
     		var data = {};
     		data['title'] = titleVal;
-    		data['venue'] = venueVal;
+    		
+    		var place = autocomplete.getPlace();
+
+    		if (!place) {
+    			// address does not exist in Google Maps
+    			data['venue'] = venueVal;
+    		} else {
+    			// address exists in Google Maps
+	    		data['venue'] = place.place_id;
+    		}
+
 	    	data['genre'] = genreVal;
 	    	if (data['genre'].length == 1) {
 	    		data['genre'].toString().replace(/,/g, "");
 	    	}
     		data['date'] = [];
+    		data['customPhoto'] = true;	
 
     		var dates = [];
 	    	$('#showingsTable > tbody  > tr').each(function() {
-    			var isoDate = ($(this).data("date")).toISOString();
+    			var isoDate = ($(this).data("date")).toString();
     			dates.push(isoDate);
 	    	});
 
 	    	data['date'] = dates;
+	    	console.log(dates);
+
+    		var earliestDate = new Date(Math.min.apply(null, dates.map(function(e) {
+  				return new Date(e);
+			})));
+
+    		var latestDate = new Date(Math.max.apply(null, dates.map(function(e) {
+  				return new Date(e);
+			})));
+
+    		var range = [earliestDate.toString(), latestDate.toString()];
+    		console.log(range);
+    		data['range'] = range;
+
+	    	if( document.getElementById("fileupload").files.length == 0 ){
+	    		data['customPhoto'] = false;
+			}
 
 			// $.each(formData, function( key, value ) {
 			//   alert( key + ": " + value );

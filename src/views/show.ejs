@@ -19,25 +19,110 @@
     width: 50%;
     padding: 10px;
 }
+
+.column-staff {
+    float: left;
+    width: 33.33%;
+    padding: 10px;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f1f1f1
+}
+
+
+.btn-group:hover .dropdown-menu {
+    display: block;
+}
+
+.checkbox {
+  margin-left: 30px;
+  display: inline-block;
+  font-weight: normal;
+}
+
+h2 {
+  display:inline-block;
+}
+
 </style>
 
-	<div class="page-header text-center">
-		<h2><%=title%></h2>
-	</div>
+<div class="page-header text-center">
+	<h2><%=show.title%></h2>
+  <% if (isLoggedIn) { %>
+    <% if (isShowOwner) { %>
+    <button class="btn pull-right btn-default" id="editShow" style="vertical-align: text-bottom;"> Edit this show</button>
+    <% } %>
+    <div class="btn-group pull-right">
+      <button type="button" class="btn pull-right btn-primary" id="attendingButton" value="<%=status%>"> <%=status%></button>
+      <ul class="dropdown-menu" id="dropdown">
+      <% futureDates.forEach(function(date) { %>
+        <li>
+          <label class="dropdown-menu-item checkbox">
+        <% if (currentlyAttending.includes(date)) { %>
+            <input type="checkbox" name='date' value="<%=date%>" checked><%=date%>
+        <% } else {%>
+            <input type="checkbox" name='date' value="<%=date%>"><%=date%>
+        <% } %>
+          </label>
+        </li>
+        <script>
+
+        </script>
+      <% }); %>
+        <div class="text-center">
+          <button class="btn btn-default" id="update"> Update</button>
+        </div>
+      </ul>
+    </div>
+    <input type="hidden" id="userId" value="<%=user_id%>">
+    <% } %>
+</div>
+
 	
 	<div class="container">
     	<div class="row">
     	  <div class="column">
-      			<img src="/static<%=picture%>" style="width:100%">
+      			<img src="/static<%=show.picture%>" style="width:100%">
 		    </div>
       	<div class="column">
-      		<p>Production Company: <%=company%></p>
-      		<p>Audition Dates: <%=date%></p>
-					<p>Audition Venue: <%=venue%></p>
+      		<p>Production Company: <a href='/companies/<%=company.id%>'><%=company.name%></a></p>
+      		<p>Dates: <%=show.date%></p>
+          <% if (isValidGoogleMap) { %>
+          <p>Venue: <a id="venue" data-id="<%=show.venue%>"><%=venue%></a></p>
+          <% } else { %>
+          <p>Venue: <%=venue%></p>
+          <% } %>
+          <p>Genre: <%=show.genre%>
 				</div>
 			</div>
-	</div>
+      
+      <div class="row">
+        <div class="column-staff">
+          <h3>Cast</h3>
+          <% cast.forEach(function(member) { %>
+          <img class="img-circle" src="/static<%=member.profile_picture%>" style="width:30% ">
+          <p><%=member.name%></p>
+        <% }) %>
+        </div>
 
+         <div class="column-staff">
+          <h3>Creative</h3>
+          <% creative.forEach(function(member) { %>
+          <img class="img-circle" src="/static<%=member.profile_picture%>" style="width:30% ">
+          <p><%=member.name%></p>
+          <% }) %>
+        </div>
+
+        <div class="column-staff">
+          <h3>Band</h3>
+          <% band.forEach(function(member) { %>
+          <img class="img-circle" src="/static<%=member.profile_picture%>" style="width:30% ">
+          <p><%=member.name%></p>
+        <% }) %>
+        </div>
+      </div>
+	</div>
 
         </div>
         <!-- /#page-content-wrapper -->
@@ -46,3 +131,79 @@
     <!-- /#wrapper -->
 </body>
 </html>
+
+<script>
+$(document).ready(function() {
+  var date = [];
+  $("#dropdown input[name='date']").each(function() {
+    if ($(this).is(":checked")) {
+      date.push($(this).val());
+    }
+  });
+
+
+  $('.dropdown-menu').on('click', function (e) {
+    e.stopPropagation();
+  });
+
+  console.log('current:' + date);
+  $("#dropdown input[name='date']").on("click", function() {
+      var _date = $(this).val();
+      //_date.toString();
+      if ($(this).is(":checked")) {
+        date.push(_date);
+      } else {
+        date.splice($.inArray(_date, date), 1);
+      } 
+      console.log(date);
+  });
+
+  var indexS = location.href.search("shows");    // index of "shows"
+  var showId = location.href.slice(indexS + 6, indexS + 42);
+
+  $('#update').on('click', function() {
+      if (date.length == 0) {
+        // user is not attending any shows
+        // elem == "Attending"
+        $.post('/shows/attendingshow',
+        {
+          show_id: showId,
+          user_id: document.getElementById("userId").value,
+          date: date
+        },
+        function(data, status) {
+          //alert("Data: " + data + "\nStatus: " + status);
+          $("#attendingButton").replaceWith('<button class="btn pull-right btn-primary" id="attendingButton"> Not Attending</button>');
+          document.getElementById("attendingButton").value = "Not Attending";
+        });
+      } else {
+        // user is attending show(s)
+        $.post('/shows/attendshow',
+        {
+          show_id: showId,
+          user_id: document.getElementById("userId").value,
+          date: date
+        },
+        function(data, status) {
+          //alert("Data: " + data + "\nStatus: " + status);
+          $("#attendingButton").replaceWith('<button class="btn pull-right btn-primary" id="attendingButton"> Attending</button>');
+          document.getElementById("attendingButton").value = "Attending";
+        });
+        
+      }
+  });
+
+
+  $("#venue").on('click', function() {
+    var venueId = $(this).data("id");
+    window.location.href= "/venues/" + venueId;
+  });
+
+  $("#editShow").on('click', function() {
+    var showIndex = window.location.href.indexOf("shows") + 6;
+    var showId = window.location.href.substring(showIndex);
+    window.location.href= "/shows/editshow/" + showId;
+  });
+
+});
+</script>

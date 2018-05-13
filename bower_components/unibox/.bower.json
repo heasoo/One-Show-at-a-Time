@@ -1,0 +1,54 @@
+{
+  "name": "unibox",
+  "version": "1.17.4",
+  "main": [
+    "js/unibox.min.js",
+    "css/unibox.min.css"
+  ],
+  "ignore": [
+    "**/.*",
+    ".git",
+    "img",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "latest"
+  },
+  "homepage": "https://github.com/ddsky/unibox",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ddsky/unibox.git"
+  },
+  "authors": [
+    "David Urbansky <davidurbansky@gmail.com>",
+    "Simon Schabel"
+  ],
+  "description": "A jQuery search suggest plugin.",
+  "keywords": [
+    "jQuery",
+    "search",
+    "suggest",
+    "search",
+    "suggest",
+    "javascript",
+    "unibox",
+    "search",
+    "bar",
+    "search",
+    "box"
+  ],
+  "license": "MIT",
+  "_release": "1.17.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.17.4",
+    "commit": "e6ea74053ac636215fbeee3821e5a6cfe7677c77"
+  },
+  "_source": "https://github.com/ddsky/unibox.git",
+  "_target": "^1.17.4",
+  "_originalSource": "unibox",
+  "_direct": true
+}

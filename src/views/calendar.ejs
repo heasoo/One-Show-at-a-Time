@@ -2,13 +2,26 @@
 <html>
 <head>
     <% include ./head %>
+    <link rel='stylesheet' href='/bower_components/fullcalendar/dist/fullcalendar.css' />
+	<!-- <script src='/bower_components/jquery.min.js'></script> -->
+	<!-- <script src='lib/moment.min.js'></script> -->
+	<script src='/bower_components/fullcalendar/dist/fullcalendar.js'></script>
 </head>
 <% include ./header %>
 
+<div class="container">
 
 	<div class="page-header text-center">
 		<h2>My Calendar</h2>
 	</div>
+
+	<div class="row">
+        <div id='calendar'>
+
+        </div>
+    </div>
+
+</div>
 
         </div>
         <!-- /#page-content-wrapper -->
@@ -17,3 +30,24 @@
     <!-- /#wrapper -->
 </body>
 </html>
+
+<script>
+$(document).ready(function() {
+	$.post("/users/calendar", function(data) {
+		var events = data;
+
+    	events.forEach(function(event) {
+    		event.start = new Date(event.start);
+    	});
+    	
+
+    	$("#calendar").fullCalendar({
+    		events: events,
+    		eventClick: function(calEvent, jsEvent, view) {
+
+    		}
+	    });
+	});
+});	
+</script>
+

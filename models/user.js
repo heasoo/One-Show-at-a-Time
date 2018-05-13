@@ -17,17 +17,19 @@ module.exports = (sequelize, DataTypes) => {
 });
 
   User.associate = (models) => {
-/*  	User.belongsToMany(models.Audition, {
+  	User.belongsToMany(models.Audition, {
   		as: 'AuditionAttendees',
-  		foreignKey: 'audition_id',
-  		through: 'attending_audition'
+      through: 'AttendingAudition',
+  		foreignKey: 'user_id',
+      otherKey: 'audition_id'
   	});
 
   	User.belongsToMany(models.Show, {
   		as: 'ShowAttendees',
-  		foreignKey: 'show_id',
-  		through: 'attending_show'
-  	}); */ 	
+  		through: 'AttendingShow',
+      foreignKey: 'user_id',
+      otherKey: 'show_id'
+  	});  	
   };
 
   return User;

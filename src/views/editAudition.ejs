@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+<head>
+    <% include ./head %>
+</head>
+<% include ./header %>
+<style>
+.alert {
+  margin-bottom: 1px;
+  height: 30px;
+  line-height:30px;
+  padding:0px 15px;
+}
+</style>
+
+	<div class="page-header text-center">
+		<button class="btn pull-right btn-success" id="edit"> Finish Editing Audition</button>
+		<input type="hidden" id="auditionId" data-id="<%=audition.id%>">
+		<h2>Edit Audition</h2>
+	</div>
+
+	<div class="container">
+		<form class="form-horizontal" id="form">
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="show">Show: </label>
+				<div class="col-sm-8">
+					<%=showTitle%>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="venue">Audition Venue: </label>	
+				<div class="col-sm-8">
+					<input id="pac-input" class="form-control" type="text" placeholder="" value="<%=venue%>">
+					<div style="padding: 5px;">
+						<div id="venueValidation"></div>
+					</div>
+				</div>
+			</div>
+			<script>
+				function initAutocomplete() {
+					// https://developers.google.com/maps/documentation/javascript/places-autocomplete
+  					// Create the search box and link it to the UI element.
+					var input = document.getElementById('pac-input');
+					var options = {
+						//bounds: defaultBounds
+						types: ['geocode', 'establishment'],
+						placeIdOnly: true		// PlaceResult: {place id, name, types}
+					}
+				  	autocomplete = new google.maps.places.Autocomplete(input, options);
+				}
+			</script>
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI&libraries=places&callback=initAutocomplete" async defer></script>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="contact">Contact: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="name" placeholder="Full Name">
+					<div style="padding: 5px;">
+						<div id="nameValidation"></div>
+					</div>
+					<br>
+					<input type="email" class="form-control" id="email" placeholder="Email" value="<%=audition.contact[0]%>">
+					<div style="padding: 5px;">
+						<div id="emailValidation"></div>
+					</div>
+					<br>
+					<input type="tel" maxlength="12" class="form-control no-spinner" id="phoneNumber" placeholder="Phone Number" value="<%=audition.contact[1]%>">
+					<div style="padding: 5px;">
+						<div id="phoneNumberValidation"></div>
+					</div>
+				</div>
+			</div>			
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="venue">Notes: </label>
+				<div class="col-sm-8">
+					<textarea rows="8" cols="80" id="notes"><%=audition.notes%></textarea>
+				</div>
+			</div>
+
+			<!-- https://github.com/Eonasdan/bootstrap-datetimepicker -->
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="date">When: </label>
+				<div class="col-sm-8" id="dateCol">
+					<div style="overflow:hidden; display:block;">
+				        <div class="row">
+				            <div class="col-md-8">
+			    	            <div id="datetimepicker12"></div>
+			        	    </div>
+				        </div>
+					</div>
+					<button class="btn btn-primary" id="addAudition">Add audition time</button>
+					<div style="padding: 5px;">
+						<div id='dateValidation'></div>
+					</div>
+				</div>			
+			</div>
+			
+			<br>
+			<br>
+			<br>
+
+ 			<table class="table table-hover" id="auditionsTable">
+				<thead>
+					<tr>
+						<th>Select</th>
+						<th>Date</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody id="auditionsTableBody">
+					<% audition.date.forEach(function(date) { %>
+					<tr data-date="<%=date%>">
+					</tr>
+					<% }) %>
+				</tbody>
+			</table>
+			<button class="btn btn-primary" id="deleteAudition">Delete audition time</button>
+
+		</form>
+	</div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+<script>
+var autocomplete;
+
+$(document).ready(function() {
+
+	/* Prerender Data */
+	$("#auditionsTable > tbody > tr").each(function() {
+		var date = ($(this).data("date")).toString();
+
+		// Date
+		var dayOfWeek = date.slice(0, date.indexOf(" "));
+		var restOfDate = date.slice(date.indexOf(" ") + 1);
+
+		var month = restOfDate.slice(0, restOfDate.indexOf(" "));
+		var restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		var dayOfMonth = restOfDate.slice(0, restOfDate.indexOf(" "));
+		var restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		var year = restOfDate.slice(0, restOfDate.indexOf(" "));
+		var restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		// Time
+		var hour = restOfDate.slice(0, restOfDate.indexOf(":"));
+		var suffix = hour >= 12 ? "PM":"AM"; 
+		hour = (hour + 11) % 12 + 1;
+		var restOfDate = restOfDate.slice(restOfDate.indexOf(":") + 1);
+
+		var minute = restOfDate.slice(0, restOfDate.indexOf(":"));
+
+
+		$(this).append("<td><input type='checkbox' name='record'></td><td>" + month + " " + dayOfMonth + " " + year + "</td><td>" + hour + ":" + minute + " " + suffix + "</td>");
+	});
+	/* End Prerender Data*/
+
+
+	var minDateValue = moment();
+	var maxDateValue = moment().add(1, 'year')
+
+    $('#datetimepicker12').datetimepicker({
+        inline: true,
+        sideBySide: true,
+        minDate: minDateValue,
+        maxDate: maxDateValue
+    });	 
+
+    $('#email').focusout(function() {
+    	var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+    	if (!$("#email").val()) {
+    		// email input is empty, ignore it for now
+    	} else {
+			if(!pattern.test($("#email").val())) {
+				// email is valid
+				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email </div>");
+			} else {
+				// email is valid
+	   			$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   		}
+    	}
+    });
+
+	$('#phoneNumber').keyup(function() {
+    	$(this).val($(this).val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3'))
+	});
+
+	$('#phoneNumber').keydown(function(e) {
+		var key   = e.keyCode ? e.keyCode : e.which;
+    
+    	if (!( [8, 9, 13, 27, 46, 110, 190].indexOf(key) !== -1 ||
+        	(key == 65 && ( e.ctrlKey || e.metaKey  ) ) || 
+	        (key >= 35 && key <= 40) ||
+    	    (key >= 48 && key <= 57 && !(e.shiftKey || e.altKey)) ||
+        	(key >= 96 && key <= 105))) {
+        	e.preventDefault();
+    	}
+	});
+
+
+	$("#addAudition").click(function(e) {
+		e.preventDefault();
+		var date = $("#datetimepicker12").data('DateTimePicker').date();
+
+		// Date
+		var day = date.date();
+		var month = moment().month(date.month()).format('MMM');
+		var year = date.year();
+
+		// Time
+		var suffix = date.hour() >= 12 ? "PM":"AM"; 
+		var hours = (date.hour() + 11) % 12 + 1;
+		var minute = (date.minute() < 10? '0':'') + date.minute();
+
+        var markup = $("<tr><td><input type='checkbox' name='record'></td><td>" + month + " " + day + " " + year + "</td><td>" + hours + ":" + minute + " " + suffix + "</td></tr>");
+        markup.data("date", date);
+        $("#auditionsTableBody").append(markup);
+
+    });
+
+    $("#deleteAudition").click(function(e){
+    	e.preventDefault();
+        $("#auditionsTableBody").find('input[name="record"]').each(function(){
+          	if($(this).is(":checked")){
+                $(this).parents("tr").remove();
+            }
+        });
+    });
+
+    $("#edit").click(function(e) {
+    	e.preventDefault();
+
+    	//var showVal = $(".selectpicker").val();
+    	var venueVal = $("#pac-input").val();
+    	var name = $("#name").val();
+    	var email = $("#email").val();
+    	var phoneNumber = $("#phoneNumber").val();
+    	phoneNumber.replace(/-/g,"");
+    	var dateCount = document.getElementById("auditionsTable").rows.length;
+
+    	// Form Validation
+    	if (!venueVal || !name || !email || !phoneNumber || dateCount <= 1) {
+    		if (!venueVal) {
+    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue. </div>");
+    		} else {
+    			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
+    		}
+
+    		if (!name) {
+    			// Name input is empty
+    			$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+    		} else {
+    			// Name input is not empty
+    			if (!/\w+\s+\w+/.test(nameVal)) {
+        			// Invalid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+		        } else {
+        			// Valid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation'></div>");
+        		}
+    		}
+
+   			if (!email) {
+    			// Email input is empty
+    			$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter your email.</div>");
+    		} else {
+    			// Email input is not empty
+    			var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+				if(!pattern.test(email)) {
+					// email is not valid
+					$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email.</div>");
+				} else {
+					// email is valid
+	   				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   			}
+    		}
+
+   			if (!phoneNumber) {
+   				// Phone Number input is empty
+   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a phone number. </div>");
+   			} else {
+   				// Phone Number input is not empty
+   				if(phoneNumber.length !== 12) {
+   					// invalid phone number
+   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a valid phone number. </div>");
+   				} else {
+   					// valid phone number
+   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation'></div>");
+   				}
+   			}
+
+    		if (dateCount <= 1) {
+    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date. </div>");
+    		} else {
+    			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
+    		}
+
+    	} else {
+	    	var data = {};
+    		var contactVal = [email, phoneNumber];
+
+    		var place = autocomplete.getPlace();
+
+    		if (!place) {
+    			// address does not exist in Google Maps
+    			data['venue'] = venueVal;
+    		} else {
+    			// address exists in Google Maps
+	    		data['venue'] = place.place_id;
+    		}
+    		/* data['venue'] end*/
+
+    		data['contact'] = contactVal;
+    		data['notes'] = $("#notes").val();
+    		data['date'] = [];
+
+    		var dates = [];
+	    	$('#auditionsTable > tbody  > tr').each(function() {
+    			var isoDate = ($(this).data("date")).toString();
+    			dates.push(isoDate);
+	    	});
+
+	    	data['date'] = dates;
+
+	    	var auditionId = $("#auditionId").data("id");
+			data['audition_id'] = auditionId;
+
+			// $.each(data, function( key, value ) {
+			//   alert( key + ": " + value );
+			// });
+
+			$.post('/auditions/editaudition', data, function(result) {
+				if (result) {
+					var _auditionId = result.id;
+					window.location.href = '/auditions/' + auditionId;
+				};
+    	    });
+
+    	}
+    });
+});	
+</script>
+
+</body>
+</html>

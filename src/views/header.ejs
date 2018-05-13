@@ -1,16 +1,49 @@
 <!doctype html>
+<style>
+#searchBox {
+    vertical-align: text-bottom;
+    position: absolute;
+    top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    line-height: 25px;
+    width: 300px;
+    padding: 0px;
+}
+
+.column {
+    float: left;
+    width: 33%;
+    padding: 0px;
+}
+
+</style>
 <html>
 
 <body>
 				
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
-			<div class="nav navbar-nav">
-				<span id="menu-toggle"><a href="#menu-toggle" class="fa fa-reorder" id="navbar-fa"></a></span>
-            </div>
-            <ul class="nav navbar-nav">
-                <li><a href="/">One Show at a Time</a></li>
-            </ul>
+                <div class="nav navbar-nav">
+                    <span id="menu-toggle"><a href="#menu-toggle" class="fa fa-reorder" id="navbar-fa"></a></span>
+                </div>
+                <ul class="nav navbar-nav" style="padding-right: 100px">
+                    <li><a href="/">One Show at a Time</a></li>
+                </ul>
+            
+            <script>
+                function redirect() {
+                        alert('a');
+                        window.location = '/searchAll/' + document.getElementById("searchBox").value;
+                }
+            </script>
+            
+            <% if (user) { %>
+            <input id="searchBox" id="searchBox" type="text" placeholder="  Search for shows and people...">
+            <% } else { %>
+            <input id="searchBox" id="searchBox" type="text" placeholder="  Search for shows...">
+            <% } %>
+
         </div>
     </nav>
     
@@ -39,10 +72,47 @@
 
 
 <script>
+$(document).ready(function() {
+    var param = document.getElementById('searchBox').value;
+
+    $("#searchBox").unibox({
+        // https://github.com/ddsky/unibox
+        suggestUrl: '/searchUrl/',
+        //searchBoxContainerSelector: undefined, // suggest will be attached to this container, by default it will be the parent of the search input (e.g. #searchBox)
+        //instantVisualFeedback: 'all', // where the instant visual feedback should be shown, 'top', 'bottom', 'all', or 'none', default: 'all'
+        //ivfImagePath: '', // the path to prepend to the instant visual feedback images
+        //ivfImageOffset: -80, // the vertical offset of the ivf images
+        missingErrorImage: undefined, // a default image in case a suggested image was not found
+        showImagesSuggestions: true, // whether to show images in the search suggestions
+        throttleTime: 300, // the number of milliseconds before the suggest is triggered after finished input, default: 300ms
+        //extraHtml: undefined, // extra HTML code that is shown in each search suggest
+        //placeholder: undefined, // the placeholder to be put in the search field
+        highlight: true, // whether matched words should be highlighted, default: true
+        //queryVisualizationHeadline: '', // A headline for the image visualization, default: empty
+        animationSpeed: 300, // speed of the animations, default: 300ms
+        //enterCallback: undefined, // callback on what should happen when enter is pressed while the focus is in the search field parameters passed are text and link
+        enterResultCallback: undefined, // callback on what should happen when enter is pressed while the focus is on one of the suggests, default: undefined, meaning the link will be followed
+        //typeCallback: undefined, // callback on keydown events in the search box
+        //focusCallback: undefined, // callback on focus events on the search box
+        //blurCallback: undefined, // callback on blur events on the search box
+        minChars: 1, // minimum number of characters before the suggests shows, default: 3
+        //maxWidth: 400, // the maximum width of the suggest box, default: as wide as the input box
+        suggestOrder: ["Shows", "Users", "Venues", "Companies"], // the order of the suggest, e.g. ["recipes","menus","restaurants"]
+        //suggestSelectionOrder: [], // the order of the suggest, e.g. ["recipes","menus","restaurants"],
+        showMoreResults: "<a id='viewAll' href='javascript:void(0);' onclick='redirect();'><b>View all results</b></a>",    // the HTML content to show if there is another more complete search page
+        disableEventPropagationHtml: true  // disable click event propagation from search (suggest) box to html elements
+    });
+
+    // $("#viewAll").click(function(e) {
+    //     e.preventDefault();
+    //     window.location = '/searchAll/' + document.getElementById("searchBox").value;
+    // });
+
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
     });
 
+});
 </script>
 </html>

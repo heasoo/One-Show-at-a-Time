@@ -5,6 +5,13 @@
 </head>
 <% include ./header %>
 
+<style>
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+</style>
 
 <div class="container">
     
@@ -13,7 +20,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-4">
+        <div class="column">
             <% if (user.fb_id) { %>     <!-- user is a FB user -->
             <img src="<%= user.profile_picture%>" class="img-rounded" width="310">
             <% } else { %>              <!-- user is a local user -->
@@ -21,10 +28,13 @@
             <% } %>
         </div>
 
-        <div class="col-sm-8">
+        <div class="column">
             <div class="well">
                 <h2>
+                    <% if (user.fb_id) { %>
+                    <% } else { %>
                     <a href="/users/editprofile" class="btn btn-primary pull-right" id="right-panel-link"> Edit</a>
+                    <% } %>
                     <span class="fa fa-user"></span> User Info
                 </h2>
 

@@ -17,8 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     date: {
       type: DataTypes.ARRAY(DataTypes.DATE),
-      defaultValue: [],
-      allowNull: true
+      allowNull: false
     },
     genre: {
       type: DataTypes.ARRAY(DataTypes.STRING),
@@ -27,10 +26,14 @@ module.exports = (sequelize, DataTypes) => {
     picture: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: '/images/default-show-picture.jpg'
+      defaultValue: '/images/shows/default-show-picture.jpg'
     },
     company_id: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    range: {
+      type: DataTypes.RANGE(DataTypes.DATE),
       allowNull: false
     }
  },
@@ -45,8 +48,9 @@ module.exports = (sequelize, DataTypes) => {
     });
     Show.belongsToMany(models.User, {
       as: 'Attendants',
-      foreignKey: 'user_id',
-      through: 'AttendingShow'
+      through: 'AttendingShow',
+      foreignKey: 'show_id',
+      otherKey: 'user_id'
     });
   };
 

@@ -5,10 +5,68 @@
 </head>
 <% include ./header %>
 
+<style>
+.alert {
+  margin-bottom: 1px;
+  height: 30px;
+  line-height:30px;
+  padding:0px 15px;
+}
+</style>
 
 	<div class="page-header text-center">
+		<button class="btn pull-right btn-success" id="edit"> Finish Editing Profile</button>
 		<h2>Edit Profile</h2>
 	</div>
+
+	<div class="container">
+		<form class="form-horizontal" id="form">
+		
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="name">Name: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="name" placeholder="Full Name" value="<%=user.name%>">
+					<div style="padding: 5px;">
+						<div id="nameValidation"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="email">Email: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="email" placeholder="email" value="<%=user.email%>">
+					<div style="padding: 5px;">
+						<div id="emailValidation"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2">Upload picture: </label>
+				<div class="col-sm-8">
+					<label class="btn btn-primary" for="picture">
+						<input id="fileupload" type="file" name="fileupload" onchange="$('#picture-info').html(this.files[0].name)" data-url="/users/uploadPhoto">
+					</label>
+					<span class='label label-info' id="picture-info"></span>
+					<div style="padding: 5px;">
+						<div id="pictureValidation"></div>
+					</div>
+
+					<!-- $(':file').on('change', function() {
+   	 					var file = this.files[0];
+    					if (file.size > 1024) {
+        					alert('max upload size is 1k')
+    				}
+
+    				// Also see .name, .type
+					}); -->
+				</div>
+			</div>
+
+		</form>
+	</div>
+
 
         </div>
         <!-- /#page-content-wrapper -->
@@ -17,3 +75,108 @@
     <!-- /#wrapper -->
 </body>
 </html>
+
+<script>
+$(document).ready(function() {
+
+	$('#fileupload').fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo(document.body);
+            });
+            $("#pictureValidation").replaceWith("<div id='pictureValidation'></div>");
+        },
+        fail: function (e, data) {
+    		$("#pictureValidation").replaceWith("<div id='pictureValidation' class='alert alert-danger'> The file is not an image. </div>");
+        }
+    });
+
+	// Full Name Validation
+	$('#name').focusout(function(e) {
+		if (/\w+\s+\w+/.test($("#name").val())) {
+        	// Valid name
+        	$("#nameValidation").replaceWith("<div id='nameValidation'></div>");
+        } else {
+        	// Invalid name
+        	$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+        }
+
+        e.preventDefault();
+	});
+
+	// Email Input Validation
+	$('#email').focusout(function() {
+    	var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+    	if (!$("#email").val()) {
+    		// email input is empty, ignore it for now
+    	} else {
+			if(!pattern.test($("#email").val())) {
+				// email is not valid
+				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email.</div>");
+			} else {
+				// email is valid
+	   			$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   		}
+    	}
+    });
+
+	$('#edit').click(function(e) {
+		e.preventDefault();
+
+    	var nameVal = $("#name").val();
+    	var emailVal = $("#email").val();	
+
+    	// Form Validation
+    	if (!nameVal || !emailVal) {	
+    		if (!nameVal) {
+    			// Name input is empty
+    			$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+    		} else {
+    			// Name input is not empty
+    			if (!/\w+\s+\w+/.test(nameVal)) {
+        			// Invalid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+		        } else {
+        			// Valid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation'></div>");
+        		}
+    		}
+
+    		if (!emailVal) {
+    			// Email input is empty
+    			$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter your email.</div>");
+    		} else {
+    			// Email input is not empty
+    			var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+				if(!pattern.test(emailVal)) {
+					// email is not valid
+					$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email.</div>");
+				} else {
+					// email is valid
+	   				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   			}
+    		}    		
+    	} else {
+    		// All required inputs filled in
+    		var data = {};
+    		data['name'] = nameVal;
+    		data['email'] = emailVal;
+
+    		data['newPhoto'] = true;
+	    	if( document.getElementById("fileupload").files.length == 0) {
+	    		data['newPhoto'] = false;
+			}
+
+			$.post('/users/editprofile', data, function(result) {
+				if (Object.values(result) == 'OK') {
+					window.location.href = '/users/profile';
+				};
+    	    });
+
+    	}
+	});
+
+
+});
+</script>

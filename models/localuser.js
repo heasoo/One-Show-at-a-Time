@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     profile_picture: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: '/images/default-profile-picture.jpg'
+      defaultValue: '/images/users/default-profile-picture.jpg'
     }
 },
 {

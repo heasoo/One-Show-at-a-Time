@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+<head>
+    <% include ./head %>
+</head>
+<% include ./header %>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI&libraries=places&callback=initAutocomplete" async defer></script>
+
+	<div class="page-header text-center">
+		<button class="btn pull-right btn-success" id="edit"> Finish Editing Show</button>
+		<input type="hidden" id="showId" data-id="<%=show.id%>">
+		<h2>Edit Show</h2>
+	</div>
+
+	<div class="container">
+		<form class="form-horizontal" id="form">
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="title">Title: </label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" id="title" name="title" required="true" value="<%=show.title%>">
+					<div id="titleValidation"></div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="venue">Venue: </label>	
+				<div class="col-sm-8">
+					<input id="pac-input" class="form-control" type="text" placeholder="" value="<%=venue%>">
+					<div id="venueValidation"></div>
+				</div>
+			</div>
+			<script>
+				function initAutocomplete() {
+					// https://developers.google.com/maps/documentation/javascript/places-autocomplete
+  					// Create the search box and link it to the UI element.
+					var input = document.getElementById('pac-input');
+					var options = {
+						//bounds: defaultBounds
+						types: ['geocode', 'establishment'],
+						placeIdOnly: true		// PlaceResult: {place id, name, types}
+					}
+				  	autocomplete = new google.maps.places.Autocomplete(input, options);
+
+				  	// When the user selects an address from the dropdown, save the result into placeResult variable
+  					// autocomplete.addListener('place_changed', fillInPlaceResultVariable);
+				}
+			</script>
+
+			<!-- https://silviomoreto.github.io/bootstrap-select/options/ -->
+			<div class="form-group">
+				<input type="hidden" id="OGgenre" value="<%=show.genre%>">
+				<label class="control-label col-sm-2" for="genre">Genre(s): </label>
+				<div class="col-sm-8">
+					<select class="selectpicker" multiple>
+  						<option>Burlesque</option>
+  						<option>Comedy</option>
+  						<option>Musical Theatre</option>
+  						<option>Play</option>
+  						<option>Romance</option>
+  						<option>Tragedy</option>
+  						<!-- TODO: add more/less in alphabetical order -->
+					</select>
+					<div id="genreValidation"></div>
+				</div>
+			</div>
+
+ 			<div class="form-group">
+				<label class="control-label col-sm-2">Upload picture: </label>
+				<div class="col-sm-8">
+					<label class="btn btn-primary" for="picture">
+						<input id="fileupload" type="file" name="fileupload" onchange="$('#picture-info').html(this.files[0].name)" data-url="/shows/uploadPhoto">
+					</label>
+					<span class='label label-info' id="picture-info"></span>
+					<div id="pictureValidation"></div>
+
+					<!-- $(':file').on('change', function() {
+   	 					var file = this.files[0];
+    					if (file.size > 1024) {
+        					alert('max upload size is 1k')
+    				}
+
+    				// Also see .name, .type
+					}); -->
+				</div>
+			</div>
+
+			<!-- https://github.com/Eonasdan/bootstrap-datetimepicker -->
+			<div class="form-group">
+				<label class="control-label col-sm-2" for="date">When: </label>
+				<div class="col-sm-8" id="dateCol">
+					<div style="overflow:hidden; display:block;">
+				        <div class="row">
+				            <div class="col-md-8">
+			    	            <div id="datetimepicker12"></div>
+			        	    </div>
+				        </div>
+					</div>
+					<button class="btn btn-primary" id="addShow">Add show time</button>
+					<div id='dateValidation'></div>
+				</div>			
+			</div>
+			
+			<br>
+			<br>
+			<br>
+
+ 			<table class="table table-hover" id="showingsTable">
+				<thead>
+					<tr>
+						<th>Select</th>
+						<th>Date</th>
+						<th>Time</th>
+					</tr>
+				</thead>
+				<tbody id="showingsTableBody">
+					<% show.date.forEach(function(date) { %>
+					<tr data-date="<%=date%>">
+					</tr>
+					<% }) %>
+
+				</tbody>
+			</table>
+			<button class="btn btn-primary" id="deleteShow">Delete show time</button>
+
+		</form>
+	</div>
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+<script>
+var autocomplete;
+
+$(document).ready(function() {
+
+	/* Prerender Data*/
+	var genres = document.getElementById('OGgenre').value.split(",");
+	$('.selectpicker').selectpicker('val', genres);
+
+
+	$("#showingsTable > tbody > tr").each(function() {
+		var date = ($(this).data("date")).toString();
+
+		// Date
+		var dayOfWeek = date.slice(0, date.indexOf(" "));
+		var restOfDate = date.slice(date.indexOf(" ") + 1);
+
+		var month = restOfDate.slice(0, restOfDate.indexOf(" "));
+		restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		var dayOfMonth = restOfDate.slice(0, restOfDate.indexOf(" "));
+		restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		var year = restOfDate.slice(0, restOfDate.indexOf(" "));
+		restOfDate = restOfDate.slice(restOfDate.indexOf(" ") + 1);
+
+		// Time
+		var hour = restOfDate.slice(0, restOfDate.indexOf(":"));
+		var suffix = hour >= 12 ? "PM":"AM"; 
+		hour = (hour + 11) % 12 + 1;
+		restOfDate = restOfDate.slice(restOfDate.indexOf(":") + 1);
+
+		var minute = restOfDate.slice(0, restOfDate.indexOf(":"));
+
+
+		$(this).append("<td><input type='checkbox' name='record'></td><td>" + month + " " + dayOfMonth + " " + year + "</td><td>" + hour + ":" + minute + " " + suffix + "</td>");
+	});
+	/* End Prerender Data*/
+
+    $('#fileupload').fileupload({
+        dataType: 'json',
+        done: function (e, data) {
+            $.each(data.result.files, function (index, file) {
+                $('<p/>').text(file.name).appendTo(document.body);
+            });
+            $("#pictureValidation").replaceWith("<div id='pictureValidation'></div>");
+        },
+        fail: function (e, data) {
+    		$("#pictureValidation").replaceWith("<div id='pictureValidation' class='alert alert-danger'> The file is not an image. </div>");
+        }
+    });
+
+
+	var minDateValue = moment();
+	var maxDateValue = moment().add(1, 'year')
+
+    $('#datetimepicker12').datetimepicker({
+        inline: true,
+        sideBySide: true,
+        minDate: minDateValue,
+        maxDate: maxDateValue
+    });	
+
+	$("#addShow").click(function(e) {
+		e.preventDefault();
+		var date = $("#datetimepicker12").data('DateTimePicker').date();
+
+		// Date
+
+		var day = date.date();
+		var month = moment().month(date.month()).format('MMM');
+		var year = date.year();
+
+		// Time
+		var suffix = date.hour() >= 12 ? "PM":"AM"; 
+		var hours = (date.hour() + 11) % 12 + 1;
+		var minute = (date.minute() < 10? '0':'') + date.minute();
+
+        var markup = $("<tr><td><input type='checkbox' name='record'></td><td>" + month + " " + day + " " + year + "</td><td>" + hours + ":" + minute + " " + suffix + "</td></tr>");
+        markup.data("date", date);
+       // alert(date);
+        $("#showingsTableBody").append(markup);
+
+    });
+
+    $("#deleteShow").click(function(e){
+    	e.preventDefault();
+        $("#showingsTableBody").find('input[name="record"]').each(function(){
+          	if($(this).is(":checked")){
+                $(this).parents("tr").remove();
+            }
+        });
+    });
+
+    $("#edit").click(function(e) {
+    	e.preventDefault();
+
+    	var titleVal = $("#title").val();
+    	var venueVal = $("#pac-input").val();
+
+    	var genreVal = $(".selectpicker").val();
+    	var dateCount = document.getElementById("showingsTable").rows.length;
+
+    	// Form Validation
+    	if (!titleVal || !venueVal || !genreVal || dateCount <= 1) {
+    		if (!titleVal) {
+    			$("#titleValidation").replaceWith("<div id='titleValidation' class='alert alert-danger'> Please enter a title </div>");
+    		} else {
+    			$("#titleValidation").replaceWith("<div id='titleValidation'></div>");
+    		}
+
+    		if (!venueVal) {
+    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue </div>");
+    		} else {
+    			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
+    		}
+
+    		if (!genreVal) {
+    			$("#genreValidation").replaceWith("<div id='genreValidation' class='alert alert-danger'> Please pick at least one genre </div>");
+    		} else {
+    			$("#genreValidation").replaceWith("<div id='genreValidation'></div>");
+    		}
+
+    		if (dateCount <= 1) {
+    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
+    		} else {
+    			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
+    		}
+
+    	} else {
+
+    		var data = {};
+    		data['title'] = titleVal;
+    		
+    		var place = autocomplete.getPlace();
+
+
+    		if (!place) {
+    			// address does not exist in Google Maps
+    			data['venue'] = venueVal;
+    		} else {
+    			// address exists in Google Maps
+	    		data['venue'] = place.place_id;
+    		}
+
+	    	data['genre'] = genreVal;
+	    	if (data['genre'].length == 1) {
+	    		data['genre'].toString().replace(/,/g, "");
+	    	}
+    		data['date'] = [];
+
+    		var dates = [];
+	    	$('#showingsTable > tbody  > tr').each(function() {
+    			var isoDate = ($(this).data("date")).toString();
+    			// console.log($(this).data("date"));
+
+    			dates.push(isoDate);
+	    	});
+
+	    	data['date'] = dates;
+
+    		data['newPhoto'] = false;
+	    	if( document.getElementById("fileupload").files.length == 1 ){
+	    		data['newPhoto'] = true;
+			}
+
+			var showId = $("#showId").data("id");
+			data['show_id'] = showId;
+/*			$.each(data, function( key, value ) {
+			  alert( key + ": " + value );
+			});*/
+
+			$.post('/shows/editshow', data, function(result) {
+				if (result) {
+					var _showId = result.id;
+					window.location.href = '/shows/' + _showId;
+				};
+    	    });
+
+    	}
+    });
+});	
+</script>
+
+</body>
+</html>

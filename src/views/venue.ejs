@@ -1,0 +1,290 @@
+<!doctype html>
+<html>
+<head>
+	<% include ./head %>
+</head>
+<% include ./header %>
+<style>
+#map {
+  height: 400px;
+  width: 100%;
+ }
+
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+
+/* Image Carousel */
+.browse .photo {
+  width: 16.66%;
+  height: auto;
+  display: inline-block; 
+  overflow: hidden; 
+  position: relative; 
+}
+
+.col-item {
+  height:100%;
+  position: relative;
+}
+
+.browse {
+  margin-top: 60px;
+}
+
+.browse .picture img {
+  width: 100%;
+  height:100%;
+  vertical-align: middle;position: relative;
+}
+
+.carousel-line > .controls {
+  position: absolute; 
+  bottom: -40px; 
+  left: 50%; 
+  margin-left: -50px;
+  background: #fff;
+  padding: -50px 20px;
+  color: #000;
+}
+
+.carousel-line > .controls > a {
+  color: #868686;
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.carousel-line > .controls > a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.carousel-img {
+	max-width:100%;
+	height:auto;
+}
+
+.carousel-img:hover {
+  opacity: 1;
+}
+
+.carousel-inner {
+	height: 200px;
+}
+/* Image Carousel End*/
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    height: auto;
+}
+
+/* Caption of Modal Image */
+/*#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}*/
+
+/* Add Animation */
+.modal-content, #caption {    
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform: scale(0)} 
+    to {-webkit-transform: scale(1)}
+}
+
+@keyframes zoom {
+    from {transform: scale(0.1)} 
+    to {transform: scale(1)}
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+
+/* The Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* End Modal*/
+</style>
+
+	<div class="page-header text-center">
+		<h2><%=venue.name%></h2>
+		<input type="hidden" id="geometry" data-lat="<%=venue.geometry.location.lat%>" data-lng="<%=venue.geometry.location.lng%>">
+		
+	</div>
+	
+	<div class="container">
+		<% if (photoReferences === undefined || photoReferences.length == 0) { %>
+		<% } else {%>
+		<div class="row">
+			<div id="carousel" class="carousel slide browse browse-web-view" data-ride="carousel">
+				<div class="carousel-line" height>
+					<div class="controls pull-right">
+						<% if (photoReferences.length > 4) { %>
+						<a class="left fa fa-angle-left btn" href="#carousel" data-slide="prev"></a>
+						<a class="left fa fa-angle-right btn" href="#carousel" data-slide="next"></a>
+						<% } %>
+					</div>
+				</div>
+
+				<div class="carousel-inner">
+					<div class="item active">
+						<div class="row">
+							<!-- for each show in genre do this -->
+							<% var count = 0; %>
+							<% photoReferences.forEach(function(photoRef) { %>
+								<% if (count != 0 && count % 4 == 0) { %>
+						</div>
+					</div>
+					<div class="item">
+						<div class="row">
+								<% } %>
+
+							<div class="col-sm-3">
+								<div class="col-item">
+									<div class="picture">
+										<img class="carousel-img" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=<%=photoRef%>&key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI">
+									</div>
+								</div>
+							</div>
+
+								<% count++; %>
+		  					<% }); %>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<% } %>
+		<br>
+		<br>
+		<div class="row">
+			<div class="column">
+				<div id="map"></div>
+			<script>
+				var map, marker;
+				var center = {lat: $("#geometry").data("lat"), lng: $("#geometry").data("lng")};
+				function initMap() {
+					// https://developers.google.com/maps/documentation/javascript/places-autocomplete
+					map = new google.maps.Map(document.getElementById('map'), {
+						center: center,
+					    zoom: 10
+					});
+
+					marker = new google.maps.Marker({
+						position: center,
+						map: map
+					});
+
+				}
+			</script>
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI&libraries=places&callback=initMap" async defer></script>
+			</div>
+
+			<div class="column">
+				<h4> Currently Playing:</h4>
+				<ul>
+				<% shows.forEach(function(show) { %>
+				<li><a href="/shows/<%=show.id%>"><%=show.title%></a></li>
+				<% }); %>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div id="modal" class="modal">
+	  <span class="close">×</span>
+	  <img class="modal-content" id="modalImg">
+	  <!-- <div id="caption"></div> -->
+	</div>
+
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+</body>
+
+
+</html>
+
+<script>
+$(document).ready(function() {
+	var modal = document.getElementById('modal');
+	var modalImg = document.getElementById("modalImg");
+	// var captionText = document.getElementById("caption");
+
+	$(".carousel-img").click(function() {
+		modal.style.display = "block";
+		modalImg.src = $(this).attr("src");
+	});
+
+	$(document).keydown(function(e) {
+		if (e.keyCode == 27) {
+			modal.style.display = "none";
+		}
+	});
+
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() { 
+    	modal.style.display = "none";
+	}
+
+});
+</script>

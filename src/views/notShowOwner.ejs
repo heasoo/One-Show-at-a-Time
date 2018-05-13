@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+	<% include ./head %>
+</head>
+<% include ./header %>
+
+<style>
+.container {
+    width: 100vh;
+    height: 100vh;
+    display: table;
+    text-align: center;
+}
+
+.container div{
+	display: table-cell;
+    vertical-align: middle;
+}
+</style>
+   
+	<div class="container"> 
+		<div>
+			<h3>You must be a show owner to access this page.</h3>
+			<button class="btn btn-default" href="#" data-toggle="modal" data-target="#user-modal" id="index-login-button"> Log In</button>
+            <button class="btn btn-default" href="#" data-toggle="modal" data-target="#user-modal" id="index-signup-button"> Sign Up</button>
+            <input id="redirect" type="hidden" value="<%=redirect%>">
+		</div>
+	</div>
+
+	<div class="modal fade" id="user-modal" tabindex="-1">
+        <div class="vertical-alignment-helper">
+            <div class="modal-dialog vertical-align-center">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+                        <ul class="nav nav-tabs nav-justified" id="modal-tabs">
+                            <li class="active"><a class="nav-link" href="#login-tab" data-toggle="tab">Log In</a></li>
+                            <li><a class="nav-link" href="#signup-tab" data-toggle="tab">Sign Up</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Log In tab -->
+                            <div class="tab-pane active fade in" id="login-tab">
+                                <br>
+                                <div id="login-result"></div>     <!-- Error message -->
+
+
+                                <form id="login-form">
+
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                            <input type="text" class="form-control" name="email">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                            <input type="password" class="form-control" name="password">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-warning btn-lg">Login</button> 
+                                    &emsp; or log in with &emsp;
+                                    <a href="/users/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
+                                </form>
+                            </div>
+
+                            <!-- Sign Up tab -->
+                            <div class="tab-pane fade in" id="signup-tab">
+                                <br>
+                                <div id="signup-result"></div>    <!-- Error message -->
+
+                                <form id="signup-form">
+
+                                    <div class="form-group">
+                                       <label>Name</label>
+                                            <input type="text" class="form-control" name="name">
+                                    </div>
+
+                                    <div class="form-group">
+                                       <label>Email</label>
+                                            <input type="text" class="form-control" name="email">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Password</label>
+                                            <input type="password" class="form-control" name="password">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-warning btn-lg">Sign up</button>
+                                    &emsp; or log in with &emsp;
+                                    <a href="/users/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+</body>
+</html>
+
+<script>
+$(document).ready(function() {
+
+    $('#index-login-button').click(function(e){
+        e.preventDefault();
+        $('#modal-tabs a[href="#login-tab"]').tab('show');
+    });
+
+    $('#index-signup-button').click(function(e){
+        e.preventDefault();
+        $('#modal-tabs a[href="#signup-tab"]').tab('show');
+    });
+
+    $("#login-form").submit(function(e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        $.post('/users/login', data, function(result) {
+            if (result.valid == true) {
+                window.location.href = document.getElementById('redirect').value;
+            } else {
+                if (result.message) {
+                    // missing credentials
+                    $("#login-result").replaceWith("<div id='login-result' class='alert alert-danger'>" + result.message + "</div>");
+                } else {
+                $("#login-result").replaceWith("<div id='login-result' class='alert alert-danger'>" + result + "</div>");
+                }
+            }
+        });
+    });
+
+    $("#signup-form").submit(function(e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        $.post('/users/signup', data, function(result) {
+            if (result.valid == true) {
+                window.location.href = document.getElementById('redirect').value;
+            } else {
+                if (result.message) {
+                    // missing credentials
+                    $("#signup-result").replaceWith("<div id='signup-result' class='alert alert-danger'>" + result.message + "</div>");
+                } else {
+                    // user already exists
+                    $("#signup-result").replaceWith("<div id='signup-result' class='alert alert-danger'>" + result + "</div>");
+                }
+            }
+        });
+    });
+});
+</script>

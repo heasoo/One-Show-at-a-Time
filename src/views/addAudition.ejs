@@ -5,16 +5,14 @@
 </head>
 <% include ./header %>
 <style>
-/*ul {
-	display:inline-block;
-}*/
-
-/*li {
-	display:inline-block;
-	list-style-type: none;
-	margin-bottom:10px;
-}*/
+.alert {
+  margin-bottom: 1px;
+  height: 30px;
+  line-height:30px;
+  padding:0px 15px;
+}
 </style>
+
 	<div class="page-header text-center">
 		<button class="btn pull-right btn-success" id="create"> Create Audition</button>
 		<h2>Add an Audition</h2>
@@ -26,31 +24,65 @@
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="show">Show: </label>
 				<div class="col-sm-8">
-					<select class="selectpicker" title="Choose a show">
-					<% shows.forEach(function(show) {%>
+					<% if (shows.length == 0) { %>
+					<select class="selectpicker" title="No shows created" disabled>
+					<script>
+						$('.selectpicker').selectpicker('val', 'noShow');
+					</script>
+					<% } else { %>
+					<select class="selectpicker" title="Choose a show">	
+						<% shows.forEach(function(show) {%>
   						<option name='<%=show.title%>' data-id='<%=show.id%>'><%= show.title %></option>
-  					<% }); %>
+	  					<% }); %>
+	  				<% } %>	
 					</select>
-					<div id="showValidation"></div>
+					<div style="padding: 5px;">
+						<div id="showValidation"></div>
+					</div>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="control-label col-sm-2" for="venue">Audition Venue: </label>
+				<label class="control-label col-sm-2" for="venue">Audition Venue: </label>	
 				<div class="col-sm-8">
-					<input type="text" class="form-control" id="venue" name="venue">
-					<div id="venueValidation"></div>
+					<input id="pac-input" class="form-control" type="text" placeholder="">
+					<div style="padding: 5px;">
+						<div id="venueValidation"></div>
+					</div>
 				</div>
 			</div>
+			<script>
+				function initAutocomplete() {
+					// https://developers.google.com/maps/documentation/javascript/places-autocomplete
+  					// Create the search box and link it to the UI element.
+					var input = document.getElementById('pac-input');
+					var options = {
+						//bounds: defaultBounds
+						types: ['geocode', 'establishment'],
+						placeIdOnly: true		// PlaceResult: {place id, name, types}
+					}
+				  	autocomplete = new google.maps.places.Autocomplete(input, options);
+				}
+			</script>
+			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCqD0RPTp6wV2-Qr2N3LPYLeK9_8qZt1wI&libraries=places&callback=initAutocomplete" async defer></script>
 
 			<div class="form-group">
 				<label class="control-label col-sm-2" for="contact">Contact: </label>
 				<div class="col-sm-8">
-					<input type="email" class="form-control" id="email" placeholder="Email">
-					<div id="emailValidation"></div>
+					<input type="text" class="form-control" id="name" placeholder="Full Name">
+					<div style="padding: 5px;">
+						<div id="nameValidation"></div>
+					</div>
 					<br>
-					<input type="tel" maxlength="12" class="form-control" id="phoneNumber" placeholder="Phone Number">
-					<div id="phoneNumberValidation"></div>
+					<input type="email" class="form-control" id="email" placeholder="Email">
+					<div style="padding: 5px;">
+						<div id="emailValidation"></div>
+					</div>
+					<br>
+					<input type="tel" maxlength="12" class="form-control no-spinner" id="phoneNumber" placeholder="Phone Number">
+					<div style="padding: 5px;">
+						<div id="phoneNumberValidation"></div>
+					</div>
 				</div>
 			</div>			
 
@@ -73,7 +105,9 @@
 				        </div>
 					</div>
 					<button class="btn btn-primary" id="addAudition">Add audition time</button>
-					<div id='dateValidation'></div>
+					<div style="padding: 5px;">
+						<div id='dateValidation'></div>
+					</div>
 				</div>			
 			</div>
 			
@@ -104,6 +138,7 @@
     <!-- /#wrapper -->
 
 <script>
+var autocomplete;
 
 $(document).ready(function() {
 
@@ -117,21 +152,40 @@ $(document).ready(function() {
         maxDate: maxDateValue
     });	 
 
+    // Email Input Validation
     $('#email').focusout(function() {
     	var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
-    
-		if(!pattern.test($("#email").val())) {
-			// email is valid
-			$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email </div>");
-		} else {
-			// email is valid
-   			$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
-   		}
+    	if (!$("#email").val()) {
+    		// email input is empty, ignore it for now
+    	} else {
+			if(!pattern.test($("#email").val())) {
+				// email is not valid
+				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email </div>");
+			} else {
+				// email is valid
+	   			$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   		}
+    	}
     });
 
+    // Phone Number Dashes
 	$('#phoneNumber').keyup(function() {
     	$(this).val($(this).val().replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'$1-$2-$3'))
 	});
+
+	// Phone Number Input Validatoin
+	$('#phoneNumber').keydown(function(e) {
+		var key   = e.keyCode ? e.keyCode : e.which;
+    
+    	if (!( [8, 9, 13, 27, 46, 110, 190].indexOf(key) !== -1 ||
+        	(key == 65 && ( e.ctrlKey || e.metaKey  ) ) || 
+	        (key >= 35 && key <= 40) ||
+    	    (key >= 48 && key <= 57 && !(e.shiftKey || e.altKey)) ||
+        	(key >= 96 && key <= 105))) {
+        	e.preventDefault();
+    	}
+	});
+
 
 	$("#addAudition").click(function(e) {
 		e.preventDefault();
@@ -165,42 +219,74 @@ $(document).ready(function() {
     	e.preventDefault();
 
     	var showVal = $(".selectpicker").val();
-    	var venueVal = $("#venue").val();
+    	var venueVal = $("#pac-input").val();
+    	var name = $("#name").val();
     	var email = $("#email").val();
     	var phoneNumber = $("#phoneNumber").val();
     	phoneNumber.replace(/-/g,"");
     	var dateCount = document.getElementById("auditionsTable").rows.length;
 
     	// Form Validation
-    	if (!showVal || !venueVal || !email || !phoneNumber || dateCount <= 1) {
-    		if (!showVal) {
-    			$("#showValidation").replaceWith("<div id='showValidation' class='alert alert-danger'> Please choose a show </div>");
+    	if (!showVal || !venueVal || !name || !email || !phoneNumber || dateCount <= 1) {
+    		if (showVal === "") {
+    			$("#showValidation").replaceWith("<div id='showValidation' class='alert alert-danger'> Please choose a show. </div>");
     		} else {
+    			if (showVal === null) {
+    				$("#showValidation").replaceWith("<div id='showValidation' class='alert alert-danger'> Please create a show before creating an audition for it. </div>");
+    			} else {
     			$("#showValidation").replaceWith("<div id='showValidation'></div>");
+    			}
     		}
 
     		if (!venueVal) {
-    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue </div>");
+    			$("#venueValidation").replaceWith("<div id='venueValidation' class='alert alert-danger'> Please enter a venue. </div>");
     		} else {
     			$("#venueValidation").replaceWith("<div id='venueValidation'></div>");
     		}
 
+    		if (!venueVal) {
+    			$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter a name. </div>");
+    		} else {
+    			$("#nameValidation").replaceWith("<div id='nameValidation'></div>");
+    		}
+
+    		if (!name) {
+    			// Name input is empty
+    			$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+    		} else {
+    			// Name input is not empty
+    			if (!/\w+\s+\w+/.test(nameVal)) {
+        			// Invalid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation' class='alert alert-danger'> Please enter your full name.</div>");
+		        } else {
+        			// Valid name
+		        	$("#nameValidation").replaceWith("<div id='nameValidation'></div>");
+        		}
+    		}
+
    			if (!email) {
-   				// no email inputted
-   				$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter an email </div>");
-   			} else {
-   				// email inputted
-   				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
-   			}
+    			// Email input is empty
+    			$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter your email.</div>");
+    		} else {
+    			// Email input is not empty
+    			var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+				if(!pattern.test(email)) {
+					// email is not valid
+					$("#emailValidation").replaceWith("<div id='emailValidation' class='alert alert-danger'> Please enter a valid email.</div>");
+				} else {
+					// email is valid
+	   				$("#emailValidation").replaceWith("<div id='emailValidation'></div>");
+	   			}
+    		}    		
 
    			if (!phoneNumber) {
-   				// no phone number inputted
-   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a phone number </div>");
+   				// Phone Number input is empty
+   				$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a phone number. </div>");
    			} else {
-   				// phone number inputted
-   				if(!phoneNumber.length === 12) {
+   				// Phone Number input is not empty
+   				if(phoneNumber.length !== 12) {
    					// invalid phone number
-   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a valid phone number </div>");
+   					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation' class='alert alert-danger'> Please enter a valid phone number. </div>");
    				} else {
    					// valid phone number
    					$("#phoneNumberValidation").replaceWith("<div id='phoneNumberValidation'></div>");
@@ -208,18 +294,30 @@ $(document).ready(function() {
    			}
 
     		if (dateCount <= 1) {
-    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date </div>");
+    			$("#dateValidation").replaceWith("<div id='dateValidation' class='alert alert-danger'> Please pick a date. </div>");
     		} else {
     			$("#dateValidation").replaceWith("<div id='dateValidation'></div>");
     		}
 
     	} else {
 	    	var data = {};
-    		var contactVal = [email, phoneNumber];
+    		var contactVal = [name, email, phoneNumber];
     		var showId = document.getElementsByName(showVal)[0].getAttribute("data-id");
 
     		data['show_id'] = showId;
-    		data['venue'] = venueVal;
+
+    		/* data['venue'] */
+    		var place = autocomplete.getPlace();
+
+    		if (!place) {
+    			// address does not exist in Google Maps
+    			data['venue'] = venueVal;
+    		} else {
+    			// address exists in Google Maps
+	    		data['venue'] = place.place_id;
+    		}
+    		/* data['venue'] end*/
+
     		data['contact'] = contactVal;
     		data['notes'] = $("#notes").val();
     		data['date'] = [];

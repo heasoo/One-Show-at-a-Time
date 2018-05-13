@@ -15,6 +15,8 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var shows = require('./routes/shows');
 var auditions = require('./routes/auditions');
+var venues = require('./routes/venues');
+var companies = require('./routes/companies');
 var roles = new ConnectRoles();
 
 // view engine setup
@@ -46,6 +48,8 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/shows', shows);
 app.use('/auditions', auditions);
+app.use('/venues', venues);
+app.use('/companies', companies);
 app.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
 
 
